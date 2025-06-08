@@ -7,7 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [1.0.1] - 2025-06-08
+## [1.0.2] - 2024-06-08
+
+### Fixed
+- Made app icon optional in DMG creation to prevent build failures
+- Fixed release workflow when AppIcon.icns is not present
 
 ## [1.0.1] - 2024-06-08
 
