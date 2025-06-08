@@ -7,9 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [1.0.0] - 2025-06-08
+## [1.0.1] - 2024-06-08
 
-## [1.0.0] - 2024-01-XX
+### Fixed
+- Resolved CI build issues for GitHub Actions
+- Added CI environment detection in Makefile
+- Fixed binary path detection for different build environments
+- Fixed YAML indentation in CI workflow
+
+## [1.0.0] - 2024-06-08
 
 ### Added
 - Initial release of macnav
