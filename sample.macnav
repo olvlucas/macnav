@@ -5,12 +5,13 @@
 # Modifiers can be used with + (ctrl+, shift+, alt+/option+, cmd+/super+)
 #
 # Available actions:
-# up, down, left, right - move selection in quadrants
-# click - click at selected area and close quadrants
-# end - close quadrants without clicking
+# up, down, left, right - cut selection to quadrants (split in half)
+# move-up, move-down, move-left, move-right - move selection by its own dimensions without changing size
+# cut-up, cut-down, cut-left, cut-right - cut the selection area (same as basic directional)
+# click - click at selected area and close overlay
+# end - close overlay without clicking
 # reset - reset to full screen view
-# cut-up, cut-down, cut-left, cut-right - cut the selection area
-# warp - warp mouse to selection (not implemented yet)
+# warp - warp mouse cursor to selection without clicking
 # grid - show grid overlay (not implemented yet)
 # quit - quit the application
 # reload - reload keybindings from .macnav file
@@ -42,11 +43,25 @@ escape end
 q quit
 r reset
 
-# Modified keys for cutting
-shift+w cut-up
-shift+a cut-left
-shift+s cut-down
-shift+d cut-right
+# Modified keys for moving (moves selection by its own dimensions without changing size)
+shift+w move-up
+shift+a move-left
+shift+s move-down
+shift+d move-right
+shift+k move-up
+shift+h move-left
+shift+j move-down
+shift+l move-right
+
+# Modified keys for cutting (alternative to basic directional keys)
+ctrl+w cut-up
+ctrl+a cut-left
+ctrl+s cut-down
+ctrl+d cut-right
+ctrl+k cut-up
+ctrl+h cut-left
+ctrl+j cut-down
+ctrl+l cut-right
 
 # Additional bindings
 ctrl+c end

@@ -8,24 +8,33 @@ This project replicates the functionality of the original Keynav tool, enabling 
 
 - ✅ Keynav-style visual overlay with crosshairs
 - ✅ Progressive area splitting for precise targeting
+- ✅ Area movement without size changes (move actions)
 - ✅ Keyboard-only navigation and clicking
 - ✅ Global keyboard shortcuts that work across all applications
 - ✅ Event interception to prevent key conflicts with other apps
 - ✅ Visual feedback with center point highlighting
+- ✅ Custom keybinding configuration support
 
 ## How It Works
 
 1. **Activate**: Press the global shortcut to show the navigation overlay
-2. **Navigate**: Use WASD or HJKL keys to progressively narrow down your target area
+2. **Navigate**: Use WASD or HJKL keys to progressively narrow down your target area, or Shift+WASD/HJKL to move the selection
 3. **Click**: Press Enter to click at the center of the selected area
 4. **Done**: The overlay automatically hides after clicking
 
-Each navigation key splits the current area in half:
+Each basic navigation key splits the current area in half:
 
-- **W/K** (Up): Select the upper half
-- **S/J** (Down): Select the lower half
-- **A/H** (Left): Select the left half
-- **D/L** (Right): Select the right half
+- **W/K**: Cut to upper half
+- **S/J**: Cut to lower half
+- **A/H**: Cut to left half
+- **D/L**: Cut to right half
+
+Each Shift+navigation key moves the selection area by its own dimensions without changing size:
+
+- **Shift+W/K**: Move selection up by its height
+- **Shift+S/J**: Move selection down by its height
+- **Shift+A/H**: Move selection left by its width
+- **Shift+D/L**: Move selection right by its width
 
 ## Keyboard Controls
 
@@ -35,14 +44,31 @@ Each navigation key splits the current area in half:
 
 ### Default Navigation (when overlay is visible)
 
-- **W** or **K**: Move to upper half
-- **A** or **H**: Move to left half
-- **S** or **J**: Move to lower half
-- **D** or **L**: Move to right half
+#### Area Cutting (splits the selection in half)
+- **W** or **K**: Cut to upper half
+- **A** or **H**: Cut to left half
+- **S** or **J**: Cut to lower half
+- **D** or **L**: Cut to right half
+
+#### Area Moving (moves selection by its own dimensions without changing size)
+- **Shift+W** or **Shift+K**: Move selection up by its height
+- **Shift+A** or **Shift+H**: Move selection left by its width
+- **Shift+S** or **Shift+J**: Move selection down by its height
+- **Shift+D** or **Shift+L**: Move selection right by its width
+
+#### Area Cutting with Control (alternative to basic cutting)
+- **Ctrl+W** or **Ctrl+K**: Cut to upper half
+- **Ctrl+A** or **Ctrl+H**: Cut to left half
+- **Ctrl+S** or **Ctrl+J**: Cut to lower half
+- **Ctrl+D** or **Ctrl+L**: Cut to right half
+
+#### Actions
 - **Enter** or **Space**: Click at the center of selected area and hide overlay
 - **Escape** or **F**: Hide overlay without clicking
 - **R**: Reset to full screen
+- **M**: Warp mouse cursor to selected area without clicking
 - **Q**: Quit application
+- **Ctrl+Shift+R**: Reload keybindings from config file
 
 _Note: When the overlay is active, navigation keys are intercepted and won't reach other applications._
 
@@ -62,12 +88,13 @@ Create `~/.macnav` with the following format:
 
 ### Available Actions
 
-- `up`, `down`, `left`, `right` - Move selection in quadrants
+- `up`, `down`, `left`, `right` - Cut selection to quadrant (splits in half)
+- `move-up`, `move-down`, `move-left`, `move-right` - Move selection area by its own dimensions without changing size
+- `cut-up`, `cut-down`, `cut-left`, `cut-right` - Cut the selection area (same as basic directional commands)
 - `click` - Click at selected area and close overlay
 - `end` - Close overlay without clicking
 - `reset` - Reset to full screen view
-- `warp` - Warp to selected area
-- `cut-up`, `cut-down`, `cut-left`, `cut-right` - Cut the selection area (planned)
+- `warp` - Warp mouse cursor to selected area without clicking
 - `quit` - Quit the application
 - `reload` - Reload keybindings from .macnav file
 - `ignore` - Ignore the key
@@ -94,8 +121,15 @@ space click
 escape end
 q quit
 
-# Modified keys
-shift+w cut-up
+# Modified keys for cutting
+ctrl+w cut-up
+ctrl+a cut-left
+
+# Modified keys for moving
+shift+w move-up
+shift+a move-left
+
+# Other actions
 ctrl+c end
 ```
 
@@ -168,13 +202,22 @@ Then build and run from Xcode using Command+R.
 
 ## Usage Example
 
+### Basic Navigation (Area Cutting)
 1. **Open any application** (browser, text editor, etc.)
 2. **Press Option+Shift+S** - navigation overlay appears
-3. **Press A** - selects left half of screen
-4. **Press W** - selects upper half of the left half
-5. **Press D** - selects right half of that area
-6. **Continue navigating** until you reach your desired location
+3. **Press A** - cuts to left half of screen
+4. **Press W** - cuts to upper half of the left half
+5. **Press D** - cuts to right half of that area
+6. **Continue cutting** until you reach your desired location
 7. **Press Enter** - clicks at that location and hides overlay
+
+### Advanced Navigation (Area Moving)
+1. **Press Option+Shift+S** - navigation overlay appears
+2. **Press A** then **W** - cut to upper left area
+3. **Press Shift+D** - move the selection area to the right by its width
+4. **Press Shift+S** - move the selection area down by its height
+5. **Fine-tune position** using more move commands
+6. **Press Enter** - clicks at that location and hides overlay
 
 ## Troubleshooting
 

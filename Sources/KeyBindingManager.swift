@@ -13,6 +13,10 @@ enum KeynavAction: String, CaseIterable {
     case cut_down = "cut-down"
     case cut_left = "cut-left"
     case cut_right = "cut-right"
+    case move_up = "move-up"
+    case move_down = "move-down"
+    case move_left = "move-left"
+    case move_right = "move-right"
     case warp = "warp"
     case grid = "grid"
     case grid_nav = "grid-nav"
@@ -63,17 +67,31 @@ class KeyBindingManager {
             KeyBinding(keyCode: 3, action: .end),       // f (alternative end)
             KeyBinding(keyCode: 12, action: .quit),     // q
 
-            KeyBinding(keyCode: 13, modifiers: .shift, action: .cut_up),      // Shift+w
-            KeyBinding(keyCode: 0, modifiers: .shift, action: .cut_left),     // Shift+a
-            KeyBinding(keyCode: 1, modifiers: .shift, action: .cut_down),     // Shift+s
-            KeyBinding(keyCode: 2, modifiers: .shift, action: .cut_right),    // Shift+d
+            KeyBinding(keyCode: 13, modifiers: .shift, action: .move_up),     // Shift+w
+            KeyBinding(keyCode: 40, modifiers: .shift, action: .move_up),     // Shift+k
+            KeyBinding(keyCode: 0, modifiers: .shift, action: .move_left),    // Shift+a
+            KeyBinding(keyCode: 4, modifiers: .shift, action: .move_left),    // Shift+h
+            KeyBinding(keyCode: 1, modifiers: .shift, action: .move_down),    // Shift+s
+            KeyBinding(keyCode: 38, modifiers: .shift, action: .move_down),   // Shift+j
+            KeyBinding(keyCode: 2, modifiers: .shift, action: .move_right),   // Shift+d
+            KeyBinding(keyCode: 37, modifiers: .shift, action: .move_right),  // Shift+l
+
+            KeyBinding(keyCode: 13, modifiers: .control, action: .cut_up),    // Ctrl+w
+            KeyBinding(keyCode: 40, modifiers: .control, action: .cut_up),    // Ctrl+k
+            KeyBinding(keyCode: 0, modifiers: .control, action: .cut_left),   // Ctrl+a
+            KeyBinding(keyCode: 4, modifiers: .control, action: .cut_left),   // Ctrl+h
+            KeyBinding(keyCode: 1, modifiers: .control, action: .cut_down),   // Ctrl+s
+            KeyBinding(keyCode: 38, modifiers: .control, action: .cut_down),  // Ctrl+j
+            KeyBinding(keyCode: 2, modifiers: .control, action: .cut_right),  // Ctrl+d
+            KeyBinding(keyCode: 37, modifiers: .control, action: .cut_right), // Ctrl+l
+
             KeyBinding(keyCode: 46, action: .warp),     // m
             KeyBinding(keyCode: 5, action: .grid),      // g
             KeyBinding(keyCode: 35, action: .history_back),  // p
             KeyBinding(keyCode: 14, action: .record),   // e
             KeyBinding(keyCode: 43, action: .windowzoom), // comma
             KeyBinding(keyCode: 47, action: .cursorzoom), // period
-            KeyBinding(keyCode: 15, modifiers: .control, action: .reload), // Ctrl+r
+            KeyBinding(keyCode: 15, modifiers: [.control, .shift], action: .reload), // Ctrl+Shift+r
         ]
     }
 

@@ -117,8 +117,53 @@ class AppDelegate: NSObject, NSApplicationDelegate {
                         appDelegate.keyBindingManager?.reloadBindings()
                     }
                     return nil
-                case .cut_up, .cut_down, .cut_left, .cut_right:
-                    print("Cut action: \(action.rawValue)")
+                case .cut_up:
+                    print("Cutting up")
+                    DispatchQueue.main.async {
+                        window.moveSelection(direction: .up)
+                    }
+                    return nil
+                case .cut_down:
+                    print("Cutting down")
+                    DispatchQueue.main.async {
+                        window.moveSelection(direction: .down)
+                    }
+                    return nil
+                case .cut_left:
+                    print("Cutting left")
+                    DispatchQueue.main.async {
+                        window.moveSelection(direction: .left)
+                    }
+                    return nil
+                case .cut_right:
+                    print("Cutting right")
+                    DispatchQueue.main.async {
+                        window.moveSelection(direction: .right)
+                    }
+                    return nil
+                case .move_up:
+                    print("Moving up")
+                    DispatchQueue.main.async {
+                        window.moveSelectionArea(direction: .up)
+                    }
+                    return nil
+                case .move_down:
+                    print("Moving down")
+                    DispatchQueue.main.async {
+                        window.moveSelectionArea(direction: .down)
+                    }
+                    return nil
+                case .move_left:
+                    print("Moving left")
+                    DispatchQueue.main.async {
+                        window.moveSelectionArea(direction: .left)
+                    }
+                    return nil
+                case .move_right:
+                    print("Moving right")
+                    DispatchQueue.main.async {
+                        window.moveSelectionArea(direction: .right)
+                    }
                     return nil
                 case .warp:
                     print("Warping to selected area")
