@@ -4,12 +4,23 @@
 APP_NAME = macnav
 VERSION = $(shell cat VERSION)
 BUILD_DIR = .build
-RELEASE_DIR = $(BUILD_DIR)/apple/Products/Release
-BINARY_PATH = $(RELEASE_DIR)/$(APP_NAME)
+# Detect binary location based on build type
+ifeq ($(CI),true)
+    RELEASE_DIR = $(BUILD_DIR)/release
+    BINARY_PATH = $(RELEASE_DIR)/$(APP_NAME)
+else
+    RELEASE_DIR = $(BUILD_DIR)/apple/Products/Release
+    BINARY_PATH = $(RELEASE_DIR)/$(APP_NAME)
+endif
 APP_BUNDLE = $(APP_NAME).app
 
 # Build configurations
-SWIFT_BUILD_FLAGS = -c release --arch arm64 --arch x86_64
+# Use single arch in CI, universal binary locally
+ifeq ($(CI),true)
+    SWIFT_BUILD_FLAGS = -c release
+else
+    SWIFT_BUILD_FLAGS = -c release --arch arm64 --arch x86_64
+endif
 
 .PHONY: all build clean test release install uninstall bundle dmg help
 
@@ -67,9 +78,25 @@ uninstall:
 # Create macOS app bundle
 bundle: build
 	@echo "Creating app bundle..."
-	@mkdir -p $(APP_BUNDLE)/Contents/MacOS
-	@mkdir -p $(APP_BUNDLE)/Contents/Resources
-	@cp $(BINARY_PATH) $(APP_BUNDLE)/Contents/MacOS/$(APP_NAME)
+	@echo "Looking for binary at: $(BINARY_PATH)"
+	@if [ ! -f "$(BINARY_PATH)" ]; then \
+		echo "Binary not found at $(BINARY_PATH), searching..."; \
+		FOUND_BINARY=$$(find $(BUILD_DIR) -name $(APP_NAME) -type f | head -1); \
+		if [ -n "$$FOUND_BINARY" ]; then \
+			echo "Found binary at: $$FOUND_BINARY"; \
+			mkdir -p $(APP_BUNDLE)/Contents/MacOS; \
+			mkdir -p $(APP_BUNDLE)/Contents/Resources; \
+			cp "$$FOUND_BINARY" $(APP_BUNDLE)/Contents/MacOS/$(APP_NAME); \
+		else \
+			echo "Error: Could not find $(APP_NAME) binary in $(BUILD_DIR)"; \
+			find $(BUILD_DIR) -name "$(APP_NAME)*" -type f || true; \
+			exit 1; \
+		fi; \
+	else \
+		mkdir -p $(APP_BUNDLE)/Contents/MacOS; \
+		mkdir -p $(APP_BUNDLE)/Contents/Resources; \
+		cp $(BINARY_PATH) $(APP_BUNDLE)/Contents/MacOS/$(APP_NAME); \
+	fi
 	@echo '<?xml version="1.0" encoding="UTF-8"?>' > $(APP_BUNDLE)/Contents/Info.plist
 	@echo '<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">' >> $(APP_BUNDLE)/Contents/Info.plist
 	@echo '<plist version="1.0">' >> $(APP_BUNDLE)/Contents/Info.plist

@@ -35,6 +35,8 @@ jobs:
 
     - name: Build release
       run: make release
+      env:
+        CI: true
 
     - name: Install create-dmg
       run: brew install create-dmg
