@@ -3,30 +3,24 @@ import AppKit
 class AppDelegate: NSObject, NSApplicationDelegate {
     var quadrantWindow: QuadrantWindow?
     var toggleEventMonitor: Any?
-    var navigationEventMonitor: Any?
-    var localEventMonitor: Any?
+    var eventTap: CFMachPort?
 
     func applicationDidFinishLaunching(_ aNotification: Notification) {
         print("macnav application started!")
 
-        // Check for accessibility permissions
         let options = [kAXTrustedCheckOptionPrompt.takeUnretainedValue(): true] as CFDictionary
         let accessEnabled = AXIsProcessTrustedWithOptions(options)
 
         if !accessEnabled {
             print("Accessibility permissions are not granted. Please grant them in System Settings -> Privacy & Security -> Accessibility.")
-            // Optionally, you could show an alert to the user here.
-            // NSApplication.shared.terminate(self) // Or terminate if critical
         }
 
         setupToggleShortcut()
     }
 
     func setupToggleShortcut() {
-        // Option + Shift + S (KeyCode 1 for S key, with option and shift flags)
-        // You can find key codes using various online tools or apps like "Key Codes" on the Mac App Store.
         let mask: NSEvent.ModifierFlags = [.option, .shift]
-        let keyCode: UInt16 = 1 // Key code for 'S'
+        let keyCode: UInt16 = 1
 
         toggleEventMonitor = NSEvent.addGlobalMonitorForEvents(matching: .keyDown) { [weak self] event in
             if event.modifierFlags.contains(mask) && event.keyCode == keyCode {
@@ -36,61 +30,91 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         }
     }
 
-    func setupNavigationMonitoring() {
-        navigationEventMonitor = NSEvent.addGlobalMonitorForEvents(matching: .keyDown) { [weak self] event in
-            guard let window = self?.quadrantWindow, window.isVisible else { return }
+    func setupEventTap() {
+        let eventMask = (1 << CGEventType.keyDown.rawValue)
 
-            let keyCode = event.keyCode
-            print("Key pressed: \(keyCode)")
+        eventTap = CGEvent.tapCreate(
+            tap: .cgSessionEventTap,
+            place: .headInsertEventTap,
+            options: .defaultTap,
+            eventsOfInterest: CGEventMask(eventMask),
+            callback: { (proxy, type, event, refcon) -> Unmanaged<CGEvent>? in
+                guard let appDelegate = Unmanaged<AppDelegate>.fromOpaque(refcon!).takeUnretainedValue() as AppDelegate?,
+                      let window = appDelegate.quadrantWindow,
+                      window.isVisible else {
+                    return Unmanaged.passUnretained(event)
+                }
 
-            switch keyCode {
-            case 13, 4:
-                print("Moving up")
-                window.moveSelection(direction: .up)
-            case 0, 38:
-                print("Moving left")
-                window.moveSelection(direction: .left)
-            case 1, 40:
-                print("Moving down")
-                window.moveSelection(direction: .down)
-            case 2, 37:
-                print("Moving right")
-                window.moveSelection(direction: .right)
-            case 36:
-                print("Clicking")
-                window.performClickAtSelectedArea()
-                self?.hideQuadrantWindow()
-            case 53:
-                print("Hiding")
-                self?.hideQuadrantWindow()
-            case 15:
-                print("Resetting")
-                window.resetToFullScreen()
-            default:
-                break
-            }
-        }
+                let keyCode = event.getIntegerValueField(.keyboardEventKeycode)
+                print("Intercepted key: \(keyCode)")
 
-        localEventMonitor = NSEvent.addLocalMonitorForEvents(matching: .keyDown) { [weak self] event in
-            guard let window = self?.quadrantWindow, window.isVisible else { return event }
-            let keyCode = event.keyCode
-            switch keyCode {
-            case 13, 4, 0, 38, 1, 40, 2, 37, 36, 53, 15:
-                return nil
-            default:
-                return event
-            }
+                switch keyCode {
+                case 13, 4:
+                    print("Moving up")
+                    DispatchQueue.main.async {
+                        window.moveSelection(direction: .up)
+                    }
+                    return nil
+                case 0, 38:
+                    print("Moving left")
+                    DispatchQueue.main.async {
+                        window.moveSelection(direction: .left)
+                    }
+                    return nil
+                case 1, 40:
+                    print("Moving down")
+                    DispatchQueue.main.async {
+                        window.moveSelection(direction: .down)
+                    }
+                    return nil
+                case 2, 37:
+                    print("Moving right")
+                    DispatchQueue.main.async {
+                        window.moveSelection(direction: .right)
+                    }
+                    return nil
+                case 36:
+                    print("Clicking")
+                    DispatchQueue.main.async {
+                        window.performClickAtSelectedArea()
+                        appDelegate.hideQuadrantWindow()
+                    }
+                    return nil
+                case 53:
+                    print("Hiding")
+                    DispatchQueue.main.async {
+                        appDelegate.hideQuadrantWindow()
+                    }
+                    return nil
+                case 15:
+                    print("Resetting")
+                    DispatchQueue.main.async {
+                        window.resetToFullScreen()
+                    }
+                    return nil
+                default:
+                    return Unmanaged.passUnretained(event)
+                }
+            },
+            userInfo: Unmanaged.passUnretained(self).toOpaque()
+        )
+
+        if let eventTap = eventTap {
+            let runLoopSource = CFMachPortCreateRunLoopSource(kCFAllocatorDefault, eventTap, 0)
+            CFRunLoopAddSource(CFRunLoopGetCurrent(), runLoopSource, .commonModes)
+            CGEvent.tapEnable(tap: eventTap, enable: true)
+            print("Event tap created and enabled")
+        } else {
+            print("Failed to create event tap")
         }
     }
 
-    func removeNavigationMonitoring() {
-        if let monitor = navigationEventMonitor {
-            NSEvent.removeMonitor(monitor)
-            navigationEventMonitor = nil
-        }
-        if let monitor = localEventMonitor {
-            NSEvent.removeMonitor(monitor)
-            localEventMonitor = nil
+    func removeEventTap() {
+        if let eventTap = eventTap {
+            CGEvent.tapEnable(tap: eventTap, enable: false)
+            CFMachPortInvalidate(eventTap)
+            self.eventTap = nil
+            print("Event tap disabled and removed")
         }
     }
 
@@ -115,16 +139,16 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     func showQuadrantWindow() {
         guard let window = quadrantWindow else { return }
 
-        NSApp.activate(ignoringOtherApps: true)
         window.makeKeyAndOrderFront(nil)
-        setupNavigationMonitoring()
+        NSApp.activate(ignoringOtherApps: true)
+        setupEventTap()
         print("Quadrants shown")
     }
 
     func hideQuadrantWindow() {
         guard let window = quadrantWindow else { return }
         window.orderOut(nil)
-        removeNavigationMonitoring()
+        removeEventTap()
         print("Quadrants hidden")
     }
 
@@ -132,16 +156,11 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         if let monitor = toggleEventMonitor {
             NSEvent.removeMonitor(monitor)
         }
-        removeNavigationMonitoring()
+        removeEventTap()
     }
 }
 
 let delegate = AppDelegate()
 NSApplication.shared.delegate = delegate
-// Ensure the app runs as an accessory app (no Dock icon or menu bar initially)
-// This should be set before NSApplication.shared.run()
-// However, for development, it might be easier to see the Dock icon.
-// You can enable this for a "release" build.
-// NSApp.setActivationPolicy(.accessory)
 
 NSApplication.shared.run()
