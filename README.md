@@ -187,41 +187,128 @@ The overlay displays:
 - **Target rectangle**: Red border outlining the current selected area
 - **Yellow center dot**: Marks the exact click point
 
-## Building and Running
+## Installation
+
+### Download from GitHub Releases (Recommended)
+
+The easiest way to install macnav is to download a pre-built release:
+
+1. Go to the [Releases page](https://github.com/Lucas-dOliveira/macnav/releases)
+2. Download the latest release:
+   - **macnav-X.X.X.dmg** - Drag and drop installer (recommended for most users)
+   - **macnav-X.X.X-macos.zip** - Contains the app bundle
+   - **macnav-X.X.X-macos.tar.gz** - Contains the command-line binary
+
+#### Using the DMG (Recommended)
+1. Download and open the `.dmg` file
+2. Drag `macnav.app` to your Applications folder
+3. **Right-click** on the app and select **"Open"** (bypasses Gatekeeper warning)
+4. Grant accessibility permissions when prompted
+
+#### Using the ZIP Archive
+1. Download and extract the `.zip` file
+2. Move `macnav.app` to your Applications folder
+3. **Right-click** on the app and select **"Open"** (bypasses Gatekeeper warning)
+4. Grant accessibility permissions when prompted
+
+### Command Line Installation
+
+If you prefer command-line tools or want to build from source:
+
+#### Install via Make (requires source code)
+```bash
+# Clone the repository
+git clone https://github.com/Lucas-dOliveira/macnav.git
+cd macnav
+
+# Build and install to /usr/local/bin
+make install
+
+# Run from anywhere
+macnav
+```
+
+#### Install Binary Only
+```bash
+# Download and extract the binary
+curl -L https://github.com/Lucas-dOliveira/macnav/releases/latest/download/macnav-X.X.X-macos.tar.gz | tar xz
+
+# Move to your PATH
+sudo mv macnav /usr/local/bin/
+
+# Run from anywhere
+macnav
+```
+
+### Homebrew (Future)
+
+Homebrew support is planned for future releases:
+```bash
+# Coming soon
+brew install macnav
+```
+
+### Requirements
+
+- **macOS 12.0 or later** (supports both Intel and Apple Silicon Macs)
+- **Accessibility permissions** (required for global shortcuts and clicking)
+
+### Granting Permissions
+
+⚠️ **Important**: macnav requires accessibility permissions to function properly.
+
+After installation, you'll need to grant accessibility permissions:
+
+1. **Launch macnav** (it will prompt for permissions)
+2. Open **System Settings → Privacy & Security → Accessibility**
+3. Click the **+** button to add an application
+4. Navigate to and select:
+   - **App Bundle**: `/Applications/macnav.app`
+   - **Command Line**: `/usr/local/bin/macnav`
+5. Ensure the checkbox next to macnav is **checked**
+6. **Restart macnav** if it was already running
+
+### Verification
+
+To verify installation is working:
+1. **Launch macnav**
+2. **Press Ctrl+Semicolon** - you should see the navigation overlay
+3. **Test navigation** with WASD or HJKL keys
+4. **Press Escape** to hide the overlay
+
+## Building from Source
 
 ### Prerequisites
 
 - macOS 12.0 or later
 - Xcode Command Line Tools (for Swift compiler)
-- **Accessibility permissions** (required for global shortcuts and clicking)
+- Git (for cloning the repository)
 
-### Granting Accessibility Permissions
+### Build Instructions
 
-For `macnav` to capture global keyboard shortcuts and simulate mouse clicks, you must grant it accessibility permissions:
-
-1. Open **System Settings > Privacy & Security > Accessibility**
-2. Click the **+** button to add an application
-3. Navigate to the compiled `macnav` executable:
-   - Command line build: `.build/debug/macnav` in your project directory
-   - Xcode build: Find the app in DerivedData products directory
-4. Ensure the checkbox next to `macnav` is checked
-5. You may need to unlock with your administrator password
-
-### Command Line Build
+#### Command Line Build
 
 ```bash
-# Clone and navigate to project
-git clone <repository-url>
+# Clone the repository
+git clone https://github.com/Lucas-dOliveira/macnav.git
 cd macnav
 
-# Build the project
-swift build
+# Build the project (creates universal binary)
+make build
+
+# Create app bundle
+make bundle
+
+# Install to /usr/local/bin (optional)
+make install
 
 # Run the application
 swift run macnav
+# OR
+./.build/apple/Products/Release/macnav
 ```
 
-### Xcode Build (Optional)
+#### Xcode Build (Optional)
 
 ```bash
 # Generate Xcode project
@@ -232,6 +319,26 @@ open macnav.xcodeproj
 ```
 
 Then build and run from Xcode using Command+R.
+
+#### Development
+
+For development with automatic rebuilding:
+
+```bash
+# Run tests
+make test
+
+# Clean build artifacts
+make clean
+
+# Build release version
+make release
+
+# Check dependencies
+make check-deps
+```
+
+**Note**: After building from source, remember to grant accessibility permissions as described in the Installation section above.
 
 ## Usage Example
 
@@ -253,6 +360,28 @@ Then build and run from Xcode using Command+R.
 6. **Press Enter** - clicks at that location and hides overlay
 
 ## Troubleshooting
+
+### "macnav is damaged and can't be opened" (Gatekeeper Warning)
+
+This is a common macOS security warning for unsigned applications downloaded from the internet.
+
+**Solution 1: Right-click Override (Recommended)**
+1. Click **"Cancel"** on the warning dialog
+2. **Right-click** on `macnav.app` in Finder
+3. Select **"Open"** from the context menu
+4. Click **"Open"** in the new dialog that appears
+5. macOS will remember this choice for future launches
+
+**Solution 2: Remove Quarantine Attribute**
+```bash
+# Remove the quarantine flag
+xattr -d com.apple.quarantine /path/to/macnav.app
+```
+
+**Solution 3: System Settings**
+1. Go to **System Settings → Privacy & Security**
+2. Look for a message about macnav being blocked
+3. Click **"Open Anyway"**
 
 ### "Accessibility permissions are not granted"
 
