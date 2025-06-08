@@ -77,19 +77,44 @@ class QuadrantView: NSView {
 
         guard let context = NSGraphicsContext.current?.cgContext else { return }
 
-        let selectedColor = NSColor(red: 1.0, green: 0.5, blue: 0.0, alpha: 0.4).cgColor
-        let selectedBorderColor = NSColor(red: 1.0, green: 0.5, blue: 0.0, alpha: 0.8).cgColor
-        let dimmedColor = NSColor(red: 0.0, green: 0.0, blue: 0.0, alpha: 0.3).cgColor
+        let dimmedColor = NSColor(red: 0.0, green: 0.0, blue: 0.0, alpha: 0.4).cgColor
+        let lineColor = NSColor(red: 1.0, green: 0.0, blue: 0.0, alpha: 0.9).cgColor
+        let centerColor = NSColor(red: 1.0, green: 1.0, blue: 0.0, alpha: 0.9).cgColor
 
         context.setFillColor(dimmedColor)
         context.fill(self.bounds)
 
-        context.setFillColor(selectedColor)
-        context.fill(currentArea)
+        context.setStrokeColor(lineColor)
+        context.setLineWidth(2)
 
-        context.setStrokeColor(selectedBorderColor)
-        context.setLineWidth(4)
+        let centerX = currentArea.midX
+        let centerY = currentArea.midY
+
+        context.move(to: CGPoint(x: centerX, y: 0))
+        context.addLine(to: CGPoint(x: centerX, y: self.bounds.height))
+        context.strokePath()
+
+        context.move(to: CGPoint(x: 0, y: centerY))
+        context.addLine(to: CGPoint(x: self.bounds.width, y: centerY))
+        context.strokePath()
+
+        context.setStrokeColor(lineColor)
+        context.setLineWidth(3)
         context.stroke(currentArea)
+
+        let centerRadius: CGFloat = 8
+        let centerRect = NSRect(
+            x: centerX - centerRadius/2,
+            y: centerY - centerRadius/2,
+            width: centerRadius,
+            height: centerRadius
+        )
+
+        context.setFillColor(centerColor)
+        context.fillEllipse(in: centerRect)
+        context.setStrokeColor(lineColor)
+        context.setLineWidth(2)
+        context.strokeEllipse(in: centerRect)
     }
 
     override func hitTest(_ point: NSPoint) -> NSView? {

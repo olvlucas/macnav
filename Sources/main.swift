@@ -73,9 +73,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
         localEventMonitor = NSEvent.addLocalMonitorForEvents(matching: .keyDown) { [weak self] event in
             guard let window = self?.quadrantWindow, window.isVisible else { return event }
-
             let keyCode = event.keyCode
-
             switch keyCode {
             case 13, 4, 0, 38, 1, 40, 2, 37, 36, 53, 15:
                 return nil
