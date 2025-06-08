@@ -134,17 +134,30 @@ dmg: bundle
 		echo "Error: create-dmg not found. Install with: brew install create-dmg"; \
 		exit 1; \
 	fi
-	@create-dmg \
-		--volname "$(APP_NAME) $(VERSION)" \
-		--volicon "$(APP_BUNDLE)/Contents/Resources/AppIcon.icns" \
-		--window-pos 200 120 \
-		--window-size 600 400 \
-		--icon-size 100 \
-		--icon "$(APP_BUNDLE)" 175 190 \
-		--hide-extension "$(APP_BUNDLE)" \
-		--app-drop-link 425 190 \
-		"$(APP_NAME)-$(VERSION).dmg" \
-		"$(APP_BUNDLE)"
+	@if [ -f "$(APP_BUNDLE)/Contents/Resources/AppIcon.icns" ]; then \
+		create-dmg \
+			--volname "$(APP_NAME) $(VERSION)" \
+			--volicon "$(APP_BUNDLE)/Contents/Resources/AppIcon.icns" \
+			--window-pos 200 120 \
+			--window-size 600 400 \
+			--icon-size 100 \
+			--icon "$(APP_BUNDLE)" 175 190 \
+			--hide-extension "$(APP_BUNDLE)" \
+			--app-drop-link 425 190 \
+			"$(APP_NAME)-$(VERSION).dmg" \
+			"$(APP_BUNDLE)"; \
+	else \
+		create-dmg \
+			--volname "$(APP_NAME) $(VERSION)" \
+			--window-pos 200 120 \
+			--window-size 600 400 \
+			--icon-size 100 \
+			--icon "$(APP_BUNDLE)" 175 190 \
+			--hide-extension "$(APP_BUNDLE)" \
+			--app-drop-link 425 190 \
+			"$(APP_NAME)-$(VERSION).dmg" \
+			"$(APP_BUNDLE)"; \
+	fi
 	@echo "DMG created: $(APP_NAME)-$(VERSION).dmg"
 
 # Check if required tools are available
