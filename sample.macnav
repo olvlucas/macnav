@@ -6,7 +6,7 @@
 #
 # Available actions:
 # up, down, left, right - cut selection to quadrants (split in half)
-# move-up, move-down, move-left, move-right - move selection by its own dimensions without changing size
+# move-up, move-down, move-left, move-right - move selection without changing size
 # cut-up, cut-down, cut-left, cut-right - cut the selection area (same as basic directional)
 # click - click at selected area and close overlay
 # end - close overlay without clicking
@@ -43,7 +43,7 @@ escape end
 q quit
 r reset
 
-# Modified keys for moving (moves selection by its own dimensions without changing size)
+# Modified keys for moving (moves selection without changing size)
 shift+w move-up
 shift+a move-left
 shift+s move-down

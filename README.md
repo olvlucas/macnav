@@ -29,12 +29,12 @@ Each basic navigation key splits the current area in half:
 - **A/H**: Cut to left half
 - **D/L**: Cut to right half
 
-Each Shift+navigation key moves the selection area by its own dimensions without changing size:
+Each Shift+navigation key moves the selection area without changing size:
 
-- **Shift+W/K**: Move selection up by its height
-- **Shift+S/J**: Move selection down by its height
-- **Shift+A/H**: Move selection left by its width
-- **Shift+D/L**: Move selection right by its width
+- **Shift+W/K**: Move selection up
+- **Shift+S/J**: Move selection down
+- **Shift+A/H**: Move selection left
+- **Shift+D/L**: Move selection right
 
 ## Keyboard Controls
 
@@ -50,11 +50,11 @@ Each Shift+navigation key moves the selection area by its own dimensions without
 - **S** or **J**: Cut to lower half
 - **D** or **L**: Cut to right half
 
-#### Area Moving (moves selection by its own dimensions without changing size)
-- **Shift+W** or **Shift+K**: Move selection up by its height
-- **Shift+A** or **Shift+H**: Move selection left by its width
-- **Shift+S** or **Shift+J**: Move selection down by its height
-- **Shift+D** or **Shift+L**: Move selection right by its width
+#### Area Moving (moves selection without changing size)
+- **Shift+W** or **Shift+K**: Move selection up
+- **Shift+A** or **Shift+H**: Move selection left
+- **Shift+S** or **Shift+J**: Move selection down
+- **Shift+D** or **Shift+L**: Move selection right
 
 #### Area Cutting with Control (alternative to basic cutting)
 - **Ctrl+W** or **Ctrl+K**: Cut to upper half
@@ -89,7 +89,7 @@ Create `~/.macnav` with the following format:
 ### Available Actions
 
 - `up`, `down`, `left`, `right` - Cut selection to quadrant (splits in half)
-- `move-up`, `move-down`, `move-left`, `move-right` - Move selection area by its own dimensions without changing size
+- `move-up`, `move-down`, `move-left`, `move-right` - Move selection area without changing size
 - `cut-up`, `cut-down`, `cut-left`, `cut-right` - Cut the selection area (same as basic directional commands)
 - `click` - Click at selected area and close overlay
 - `end` - Close overlay without clicking
@@ -214,8 +214,8 @@ Then build and run from Xcode using Command+R.
 ### Advanced Navigation (Area Moving)
 1. **Press Option+Shift+S** - navigation overlay appears
 2. **Press A** then **W** - cut to upper left area
-3. **Press Shift+D** - move the selection area to the right by its width
-4. **Press Shift+S** - move the selection area down by its height
+3. **Press Shift+D** - move the selection area to the right without changing size
+4. **Press Shift+S** - move the selection area down
 5. **Fine-tune position** using more move commands
 6. **Press Enter** - clicks at that location and hides overlay
 

@@ -68,10 +68,12 @@ class QuadrantView: NSView {
         needsDisplay = true
     }
 
-        func moveSelectionArea(direction: MovementDirection) {
+    func moveSelectionArea(direction: MovementDirection) {
+        let moveDistance = min(currentArea.width * 0.1, currentArea.height * 0.1)
+
         switch direction {
         case .up:
-            let newY = min(currentArea.minY + currentArea.height, self.bounds.maxY - currentArea.height)
+            let newY = min(currentArea.minY + moveDistance, self.bounds.maxY - currentArea.height)
             currentArea = NSRect(
                 x: currentArea.minX,
                 y: newY,
@@ -79,7 +81,7 @@ class QuadrantView: NSView {
                 height: currentArea.height
             )
         case .down:
-            let newY = max(currentArea.minY - currentArea.height, self.bounds.minY)
+            let newY = max(currentArea.minY - moveDistance, self.bounds.minY)
             currentArea = NSRect(
                 x: currentArea.minX,
                 y: newY,
@@ -87,7 +89,7 @@ class QuadrantView: NSView {
                 height: currentArea.height
             )
         case .left:
-            let newX = max(currentArea.minX - currentArea.width, self.bounds.minX)
+            let newX = max(currentArea.minX - moveDistance, self.bounds.minX)
             currentArea = NSRect(
                 x: newX,
                 y: currentArea.minY,
@@ -95,7 +97,7 @@ class QuadrantView: NSView {
                 height: currentArea.height
             )
         case .right:
-            let newX = min(currentArea.minX + currentArea.width, self.bounds.maxX - currentArea.width)
+            let newX = min(currentArea.minX + moveDistance, self.bounds.maxX - currentArea.width)
             currentArea = NSRect(
                 x: newX,
                 y: currentArea.minY,
