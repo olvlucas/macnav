@@ -5,6 +5,7 @@ A Keynav-like application for macOS that allows keyboard-based navigation and cl
 This project replicates the functionality of the original Keynav tool, enabling you to quickly navigate to any point on your screen using only keyboard shortcuts. The screen is progressively divided into smaller areas until you reach your target location.
 
 ## Features
+
 - ✅ Keynav-style visual overlay with crosshairs
 - ✅ Progressive area splitting for precise targeting
 - ✅ Keyboard-only navigation and clicking
@@ -20,6 +21,7 @@ This project replicates the functionality of the original Keynav tool, enabling 
 4. **Done**: The overlay automatically hides after clicking
 
 Each navigation key splits the current area in half:
+
 - **W/K** (Up): Select the upper half
 - **S/J** (Down): Select the lower half
 - **A/H** (Left): Select the left half
@@ -28,9 +30,11 @@ Each navigation key splits the current area in half:
 ## Keyboard Controls
 
 ### Global Shortcuts
+
 - **Option+Shift+S**: Toggle the navigation overlay on/off
 
 ### Default Navigation (when overlay is visible)
+
 - **W** or **K**: Move to upper half
 - **A** or **H**: Move to left half
 - **S** or **J**: Move to lower half
@@ -40,14 +44,16 @@ Each navigation key splits the current area in half:
 - **R**: Reset to full screen
 - **Q**: Quit application
 
-*Note: When the overlay is active, navigation keys are intercepted and won't reach other applications.*
+_Note: When the overlay is active, navigation keys are intercepted and won't reach other applications._
 
 ## Custom Keybindings
 
 macnav supports custom keybindings through a configuration file, similar to keynav's `.keynavrc`. You can create a `.macnav` file in your home directory to customize the controls.
 
 ### Configuration File Format
+
 Create `~/.macnav` with the following format:
+
 ```
 # Comments start with #
 <key> <action>
@@ -55,22 +61,26 @@ Create `~/.macnav` with the following format:
 ```
 
 ### Available Actions
+
 - `up`, `down`, `left`, `right` - Move selection in quadrants
 - `click` - Click at selected area and close overlay
 - `end` - Close overlay without clicking
 - `reset` - Reset to full screen view
+- `warp` - Warp to selected area
 - `cut-up`, `cut-down`, `cut-left`, `cut-right` - Cut the selection area (planned)
 - `quit` - Quit the application
 - `reload` - Reload keybindings from .macnav file
 - `ignore` - Ignore the key
 
 ### Supported Modifiers
+
 - `ctrl+` - Control key
 - `shift+` - Shift key
 - `alt+` or `option+` - Option/Alt key
 - `cmd+` or `super+` - Command key
 
 ### Example Configuration
+
 ```
 # Vim-style navigation
 h left
@@ -90,7 +100,9 @@ ctrl+c end
 ```
 
 ### Key Names
+
 Use lowercase letters (`a-z`), numbers (`0-9`), or special keys:
+
 - `space`, `return`, `enter`, `escape`, `tab`, `delete`
 - `up`, `down`, `left`, `right` (arrow keys)
 - `f1`-`f12` (function keys)
@@ -102,6 +114,7 @@ The configuration file is loaded on startup. You can also reload keybindings dur
 ## Visual Elements
 
 The overlay displays:
+
 - **Dimmed background**: Covers the entire screen to focus attention
 - **Red crosshairs**: Extend across the screen showing the target center
 - **Target rectangle**: Red border outlining the current selected area
@@ -110,11 +123,13 @@ The overlay displays:
 ## Building and Running
 
 ### Prerequisites
+
 - macOS 12.0 or later
 - Xcode Command Line Tools (for Swift compiler)
 - **Accessibility permissions** (required for global shortcuts and clicking)
 
 ### Granting Accessibility Permissions
+
 For `macnav` to capture global keyboard shortcuts and simulate mouse clicks, you must grant it accessibility permissions:
 
 1. Open **System Settings > Privacy & Security > Accessibility**
@@ -126,6 +141,7 @@ For `macnav` to capture global keyboard shortcuts and simulate mouse clicks, you
 5. You may need to unlock with your administrator password
 
 ### Command Line Build
+
 ```bash
 # Clone and navigate to project
 git clone <repository-url>
@@ -139,6 +155,7 @@ swift run macnav
 ```
 
 ### Xcode Build (Optional)
+
 ```bash
 # Generate Xcode project
 swift package generate-xcodeproj
@@ -162,14 +179,17 @@ Then build and run from Xcode using Command+R.
 ## Troubleshooting
 
 ### "Accessibility permissions are not granted"
+
 - Follow the accessibility permissions setup above
 - Restart the application after granting permissions
 
 ### Navigation keys still type in other applications
+
 - Ensure accessibility permissions are granted
 - The app uses CGEventTap to intercept keys when overlay is active
 
 ### Click not working
+
 - Verify accessibility permissions include "Control your computer"
 - Check that the debug output shows correct coordinates
 
