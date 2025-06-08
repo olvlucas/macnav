@@ -4,8 +4,8 @@
 APP_NAME = macnav
 VERSION = $(shell cat VERSION)
 BUILD_DIR = .build
-RELEASE_DIR = $(BUILD_DIR)/release
-BINARY_PATH = $(BUILD_DIR)/release/$(APP_NAME)
+RELEASE_DIR = $(BUILD_DIR)/apple/Products/Release
+BINARY_PATH = $(RELEASE_DIR)/$(APP_NAME)
 APP_BUNDLE = $(APP_NAME).app
 
 # Build configurations
@@ -69,41 +69,35 @@ bundle: build
 	@echo "Creating app bundle..."
 	@mkdir -p $(APP_BUNDLE)/Contents/MacOS
 	@mkdir -p $(APP_BUNDLE)/Contents/Resources
-
-	# Copy the binary
 	@cp $(BINARY_PATH) $(APP_BUNDLE)/Contents/MacOS/$(APP_NAME)
-
-	# Create Info.plist
-	@cat > $(APP_BUNDLE)/Contents/Info.plist << 'EOF'
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-<plist version="1.0">
-<dict>
-	<key>CFBundleExecutable</key>
-	<string>$(APP_NAME)</string>
-	<key>CFBundleIdentifier</key>
-	<string>com.macnav.$(APP_NAME)</string>
-	<key>CFBundleName</key>
-	<string>$(APP_NAME)</string>
-	<key>CFBundleVersion</key>
-	<string>$(VERSION)</string>
-	<key>CFBundleShortVersionString</key>
-	<string>$(VERSION)</string>
-	<key>CFBundleInfoDictionaryVersion</key>
-	<string>6.0</string>
-	<key>CFBundlePackageType</key>
-	<string>APPL</string>
-	<key>LSMinimumSystemVersion</key>
-	<string>12.0</string>
-	<key>LSApplicationCategoryType</key>
-	<string>public.app-category.utilities</string>
-	<key>NSHighResolutionCapable</key>
-	<true/>
-	<key>LSUIElement</key>
-	<true/>
-</dict>
-</plist>
-EOF
+	@echo '<?xml version="1.0" encoding="UTF-8"?>' > $(APP_BUNDLE)/Contents/Info.plist
+	@echo '<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">' >> $(APP_BUNDLE)/Contents/Info.plist
+	@echo '<plist version="1.0">' >> $(APP_BUNDLE)/Contents/Info.plist
+	@echo '<dict>' >> $(APP_BUNDLE)/Contents/Info.plist
+	@echo '	<key>CFBundleExecutable</key>' >> $(APP_BUNDLE)/Contents/Info.plist
+	@echo '	<string>$(APP_NAME)</string>' >> $(APP_BUNDLE)/Contents/Info.plist
+	@echo '	<key>CFBundleIdentifier</key>' >> $(APP_BUNDLE)/Contents/Info.plist
+	@echo '	<string>com.macnav.$(APP_NAME)</string>' >> $(APP_BUNDLE)/Contents/Info.plist
+	@echo '	<key>CFBundleName</key>' >> $(APP_BUNDLE)/Contents/Info.plist
+	@echo '	<string>$(APP_NAME)</string>' >> $(APP_BUNDLE)/Contents/Info.plist
+	@echo '	<key>CFBundleVersion</key>' >> $(APP_BUNDLE)/Contents/Info.plist
+	@echo '	<string>$(VERSION)</string>' >> $(APP_BUNDLE)/Contents/Info.plist
+	@echo '	<key>CFBundleShortVersionString</key>' >> $(APP_BUNDLE)/Contents/Info.plist
+	@echo '	<string>$(VERSION)</string>' >> $(APP_BUNDLE)/Contents/Info.plist
+	@echo '	<key>CFBundleInfoDictionaryVersion</key>' >> $(APP_BUNDLE)/Contents/Info.plist
+	@echo '	<string>6.0</string>' >> $(APP_BUNDLE)/Contents/Info.plist
+	@echo '	<key>CFBundlePackageType</key>' >> $(APP_BUNDLE)/Contents/Info.plist
+	@echo '	<string>APPL</string>' >> $(APP_BUNDLE)/Contents/Info.plist
+	@echo '	<key>LSMinimumSystemVersion</key>' >> $(APP_BUNDLE)/Contents/Info.plist
+	@echo '	<string>12.0</string>' >> $(APP_BUNDLE)/Contents/Info.plist
+	@echo '	<key>LSApplicationCategoryType</key>' >> $(APP_BUNDLE)/Contents/Info.plist
+	@echo '	<string>public.app-category.utilities</string>' >> $(APP_BUNDLE)/Contents/Info.plist
+	@echo '	<key>NSHighResolutionCapable</key>' >> $(APP_BUNDLE)/Contents/Info.plist
+	@echo '	<true/>' >> $(APP_BUNDLE)/Contents/Info.plist
+	@echo '	<key>LSUIElement</key>' >> $(APP_BUNDLE)/Contents/Info.plist
+	@echo '	<true/>' >> $(APP_BUNDLE)/Contents/Info.plist
+	@echo '</dict>' >> $(APP_BUNDLE)/Contents/Info.plist
+	@echo '</plist>' >> $(APP_BUNDLE)/Contents/Info.plist
 	@echo "App bundle created: $(APP_BUNDLE)"
 
 # Create DMG for distribution (requires create-dmg: brew install create-dmg)
