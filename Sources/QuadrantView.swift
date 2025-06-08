@@ -187,6 +187,34 @@ class QuadrantWindow: NSWindow {
         }
     }
 
+    func warpToSelectedArea() {
+        let selectedRect = quadrantView.getCurrentSelectedRect()
+        let centerPoint = NSPoint(x: selectedRect.midX, y: selectedRect.midY)
+
+        print("Selected rect: \(selectedRect)")
+        print("Center point (window coords): \(centerPoint)")
+
+        let screenRect = self.convertToScreen(NSRect(origin: centerPoint, size: NSSize.zero))
+        let screenPoint = screenRect.origin
+
+        let flippedScreenPoint = CGPoint(
+            x: screenPoint.x,
+            y: (NSScreen.main?.frame.height ?? 0) - screenPoint.y
+        )
+
+        print("Warping to screen point: \(screenPoint)")
+        print("Warping to flipped screen point: \(flippedScreenPoint)")
+
+        let moveEvent = CGEvent(mouseEventSource: nil, mouseType: .mouseMoved, mouseCursorPosition: flippedScreenPoint, mouseButton: .left)
+
+        if let move = moveEvent {
+            move.post(tap: CGEventTapLocation.cghidEventTap)
+            print("Mouse warped to selected area")
+        } else {
+            print("Failed to create mouse move event")
+        }
+    }
+
     override func makeKeyAndOrderFront(_ sender: Any?) {
         super.makeKeyAndOrderFront(sender)
         quadrantView.resetToFullScreen()

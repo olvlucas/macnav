@@ -120,7 +120,13 @@ class AppDelegate: NSObject, NSApplicationDelegate {
                 case .cut_up, .cut_down, .cut_left, .cut_right:
                     print("Cut action: \(action.rawValue)")
                     return nil
-                case .warp, .grid, .grid_nav, .history_back, .record, .playback, .windowzoom, .cursorzoom, .ignore:
+                case .warp:
+                    print("Warping to selected area")
+                    DispatchQueue.main.async {
+                        window.warpToSelectedArea()
+                    }
+                    return nil
+                case .grid, .grid_nav, .history_back, .record, .playback, .windowzoom, .cursorzoom, .ignore:
                     print("Action not implemented yet: \(action.rawValue)")
                     return nil
                 }
