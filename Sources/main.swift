@@ -4,6 +4,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     var quadrantWindow: QuadrantWindow?
     var toggleEventMonitor: Any?
     var eventTap: CFMachPort?
+    var keyBindingManager: KeyBindingManager?
 
     func applicationDidFinishLaunching(_ aNotification: Notification) {
         print("macnav application started!")
@@ -15,6 +16,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             print("Accessibility permissions are not granted. Please grant them in System Settings -> Privacy & Security -> Accessibility.")
         }
 
+        keyBindingManager = KeyBindingManager()
         setupToggleShortcut()
     }
 
@@ -45,55 +47,82 @@ class AppDelegate: NSObject, NSApplicationDelegate {
                     return Unmanaged.passUnretained(event)
                 }
 
-                let keyCode = event.getIntegerValueField(.keyboardEventKeycode)
-                print("Intercepted key: \(keyCode)")
+                let keyCode = UInt16(event.getIntegerValueField(.keyboardEventKeycode))
+                let rawFlags = event.flags.rawValue
+                let relevantFlags: UInt64 = 0x00FF0000
+                let maskedFlags = rawFlags & relevantFlags
+                let flags = NSEvent.ModifierFlags(rawValue: UInt(maskedFlags))
+                print("Intercepted key: \(keyCode) with modifiers: \(flags)")
 
-                switch keyCode {
-                case 13, 4:
+                guard let keyBindingManager = appDelegate.keyBindingManager,
+                      let action = keyBindingManager.getAction(for: keyCode, modifiers: flags) else {
+                    return Unmanaged.passUnretained(event)
+                }
+
+                print("Action: \(action.rawValue)")
+
+                switch action {
+                case .up:
                     print("Moving up")
                     DispatchQueue.main.async {
                         window.moveSelection(direction: .up)
                     }
                     return nil
-                case 0, 38:
+                case .left:
                     print("Moving left")
                     DispatchQueue.main.async {
                         window.moveSelection(direction: .left)
                     }
                     return nil
-                case 1, 40:
+                case .down:
                     print("Moving down")
                     DispatchQueue.main.async {
                         window.moveSelection(direction: .down)
                     }
                     return nil
-                case 2, 37:
+                case .right:
                     print("Moving right")
                     DispatchQueue.main.async {
                         window.moveSelection(direction: .right)
                     }
                     return nil
-                case 36:
+                case .click:
                     print("Clicking")
                     DispatchQueue.main.async {
                         window.performClickAtSelectedArea()
                         appDelegate.hideQuadrantWindow()
                     }
                     return nil
-                case 53:
+                case .end:
                     print("Hiding")
                     DispatchQueue.main.async {
                         appDelegate.hideQuadrantWindow()
                     }
                     return nil
-                case 15:
+                case .reset:
                     print("Resetting")
                     DispatchQueue.main.async {
                         window.resetToFullScreen()
                     }
                     return nil
-                default:
-                    return Unmanaged.passUnretained(event)
+                case .quit:
+                    print("Quitting")
+                    DispatchQueue.main.async {
+                        NSApplication.shared.terminate(nil)
+                    }
+                    return nil
+                case .reload:
+                    print("Reloading keybindings")
+                    DispatchQueue.main.async {
+                        appDelegate.keyBindingManager?.reloadBindings()
+                    }
+                    return nil
+                case .cut_up, .cut_down, .cut_left, .cut_right:
+                    print("Cut action: \(action.rawValue)")
+                    return nil
+                case .warp, .grid, .grid_nav, .history_back, .record, .playback, .windowzoom, .cursorzoom, .ignore:
+                    print("Action not implemented yet: \(action.rawValue)")
+                    return nil
                 }
             },
             userInfo: Unmanaged.passUnretained(self).toOpaque()

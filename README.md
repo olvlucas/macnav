@@ -30,16 +30,74 @@ Each navigation key splits the current area in half:
 ### Global Shortcuts
 - **Option+Shift+S**: Toggle the navigation overlay on/off
 
-### Navigation (when overlay is visible)
+### Default Navigation (when overlay is visible)
 - **W** or **K**: Move to upper half
 - **A** or **H**: Move to left half
 - **S** or **J**: Move to lower half
 - **D** or **L**: Move to right half
-- **Enter**: Click at the center of selected area and hide overlay
-- **Escape**: Hide overlay without clicking
+- **Enter** or **Space**: Click at the center of selected area and hide overlay
+- **Escape** or **F**: Hide overlay without clicking
 - **R**: Reset to full screen
+- **Q**: Quit application
 
-*Note: When the overlay is active, WASD/HJKL keys are intercepted and won't reach other applications.*
+*Note: When the overlay is active, navigation keys are intercepted and won't reach other applications.*
+
+## Custom Keybindings
+
+macnav supports custom keybindings through a configuration file, similar to keynav's `.keynavrc`. You can create a `.macnav` file in your home directory to customize the controls.
+
+### Configuration File Format
+Create `~/.macnav` with the following format:
+```
+# Comments start with #
+<key> <action>
+<modifier+key> <action>
+```
+
+### Available Actions
+- `up`, `down`, `left`, `right` - Move selection in quadrants
+- `click` - Click at selected area and close overlay
+- `end` - Close overlay without clicking
+- `reset` - Reset to full screen view
+- `cut-up`, `cut-down`, `cut-left`, `cut-right` - Cut the selection area (planned)
+- `quit` - Quit the application
+- `reload` - Reload keybindings from .macnav file
+- `ignore` - Ignore the key
+
+### Supported Modifiers
+- `ctrl+` - Control key
+- `shift+` - Shift key
+- `alt+` or `option+` - Option/Alt key
+- `cmd+` or `super+` - Command key
+
+### Example Configuration
+```
+# Vim-style navigation
+h left
+j down
+k up
+l right
+
+# Actions
+return click
+space click
+escape end
+q quit
+
+# Modified keys
+shift+w cut-up
+ctrl+c end
+```
+
+### Key Names
+Use lowercase letters (`a-z`), numbers (`0-9`), or special keys:
+- `space`, `return`, `enter`, `escape`, `tab`, `delete`
+- `up`, `down`, `left`, `right` (arrow keys)
+- `f1`-`f12` (function keys)
+- `comma`, `period`, `semicolon`, `quote`, `grave`, `minus`, `equal`
+- `leftbracket`, `rightbracket`, `backslash`, `slash`
+
+The configuration file is loaded on startup. You can also reload keybindings during runtime by pressing `Ctrl+R` (or your custom reload binding) while the overlay is active.
 
 ## Visual Elements
 

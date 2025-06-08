@@ -1,0 +1,61 @@
+# Sample .macnav configuration file
+# Place this file in your home directory as ~/.macnav
+#
+# Format: <key> <action>
+# Modifiers can be used with + (ctrl+, shift+, alt+/option+, cmd+/super+)
+#
+# Available actions:
+# up, down, left, right - move selection in quadrants
+# click - click at selected area and close quadrants
+# end - close quadrants without clicking
+# reset - reset to full screen view
+# cut-up, cut-down, cut-left, cut-right - cut the selection area
+# warp - warp mouse to selection (not implemented yet)
+# grid - show grid overlay (not implemented yet)
+# quit - quit the application
+# reload - reload keybindings from .macnav file
+# ignore - ignore the key
+
+# Movement keys (vim-style)
+h left
+j down
+k up
+l right
+
+# Alternative movement (arrow keys)
+left left
+down down
+up up
+right right
+
+# Alternative movement (WASD)
+w up
+a left
+s down
+d right
+
+# Actions
+return click
+enter click
+space click
+escape end
+q quit
+r reset
+
+# Modified keys for cutting
+shift+w cut-up
+shift+a cut-left
+shift+s cut-down
+shift+d cut-right
+
+# Additional bindings
+ctrl+c end
+ctrl+r reload
+f end
+m warp
+g grid
+
+# Custom user bindings examples:
+# ctrl+shift+q quit
+# alt+space click
+# cmd+r reset
