@@ -63,7 +63,10 @@ Each Shift+navigation key moves the selection area without changing size:
 - **Ctrl+D** or **Ctrl+L**: Cut to right half
 
 #### Actions
-- **Enter** or **Space**: Click at the center of selected area and hide overlay
+- **Enter** or **Space**: Warp to selected area, left click, and hide overlay
+- **1**: Left click at current mouse position
+- **2**: Right click at current mouse position
+- **3**: Middle click at current mouse position
 - **Escape** or **F**: Hide overlay without clicking
 - **R**: Reset to full screen
 - **M**: Warp mouse cursor to selected area without clicking
@@ -83,15 +86,21 @@ Create `~/.macnav` with the following format:
 ```
 # Comments start with #
 <key> <action>
+<key> <action1>,<action2>,<action3>
 <modifier+key> <action>
 ```
+
+Multiple actions can be chained together using commas, following keynav's syntax. For example, `space warp,click 1,end` will first warp the mouse to the selected area, then perform a left click at that position, and finally hide the overlay.
 
 ### Available Actions
 
 - `up`, `down`, `left`, `right` - Cut selection to quadrant (splits in half)
 - `move-up`, `move-down`, `move-left`, `move-right` - Move selection area without changing size
 - `cut-up`, `cut-down`, `cut-left`, `cut-right` - Cut the selection area (same as basic directional commands)
-- `click` - Click at selected area and close overlay
+- `click` - Click at selected area and close overlay (legacy)
+- `click 1` - Left click at current mouse position
+- `click 2` - Right click at current mouse position
+- `click 3` - Middle click at current mouse position
 - `end` - Close overlay without clicking
 - `reset` - Reset to full screen view
 - `warp` - Warp mouse cursor to selected area without clicking
@@ -115,11 +124,16 @@ j down
 k up
 l right
 
-# Actions
-return click
-space click
+# Actions - keynav style with multiple commands
+return warp,click 1,end
+space warp,click 1,end
 escape end
 q quit
+
+# Click actions at current mouse position
+1 click 1
+2 click 2
+3 click 3
 
 # Modified keys for cutting
 ctrl+w cut-up

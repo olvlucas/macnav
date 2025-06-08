@@ -55,126 +55,127 @@ class AppDelegate: NSObject, NSApplicationDelegate {
                 print("Intercepted key: \(keyCode) with modifiers: \(flags)")
 
                 guard let keyBindingManager = appDelegate.keyBindingManager,
-                      let action = keyBindingManager.getAction(for: keyCode, modifiers: flags) else {
+                      let actions = keyBindingManager.getActions(for: keyCode, modifiers: flags) else {
                     return Unmanaged.passUnretained(event)
                 }
 
-                print("Action: \(action.rawValue)")
+                let actionsString = actions.map { $0.rawValue }.joined(separator: ",")
+                print("Actions: \(actionsString)")
 
-                switch action {
-                case .up:
-                    print("Moving up")
-                    DispatchQueue.main.async {
-                        window.moveSelection(direction: .up)
+                for action in actions {
+                    switch action {
+                    case .up:
+                        print("Moving up")
+                        DispatchQueue.main.async {
+                            window.moveSelection(direction: .up)
+                        }
+                    case .left:
+                        print("Moving left")
+                        DispatchQueue.main.async {
+                            window.moveSelection(direction: .left)
+                        }
+                    case .down:
+                        print("Moving down")
+                        DispatchQueue.main.async {
+                            window.moveSelection(direction: .down)
+                        }
+                    case .right:
+                        print("Moving right")
+                        DispatchQueue.main.async {
+                            window.moveSelection(direction: .right)
+                        }
+                    case .click:
+                        print("Clicking")
+                        DispatchQueue.main.async {
+                            window.performClickAtSelectedArea()
+                            appDelegate.hideQuadrantWindow()
+                        }
+                    case .click1:
+                        print("Click 1 (left click)")
+                        DispatchQueue.main.async {
+                            window.performClickAtCurrentMousePosition(button: .left)
+                        }
+                    case .click2:
+                        print("Click 2 (right click)")
+                        DispatchQueue.main.async {
+                            window.performClickAtCurrentMousePosition(button: .right)
+                        }
+                    case .click3:
+                        print("Click 3 (middle click)")
+                        DispatchQueue.main.async {
+                            window.performClickAtCurrentMousePosition(button: .center)
+                        }
+                    case .end:
+                        print("Hiding")
+                        DispatchQueue.main.async {
+                            appDelegate.hideQuadrantWindow()
+                        }
+                    case .reset:
+                        print("Resetting")
+                        DispatchQueue.main.async {
+                            window.resetToFullScreen()
+                        }
+                    case .quit:
+                        print("Quitting")
+                        DispatchQueue.main.async {
+                            NSApplication.shared.terminate(nil)
+                        }
+                    case .reload:
+                        print("Reloading keybindings")
+                        DispatchQueue.main.async {
+                            appDelegate.keyBindingManager?.reloadBindings()
+                        }
+                    case .cut_up:
+                        print("Cutting up")
+                        DispatchQueue.main.async {
+                            window.moveSelection(direction: .up)
+                        }
+                    case .cut_down:
+                        print("Cutting down")
+                        DispatchQueue.main.async {
+                            window.moveSelection(direction: .down)
+                        }
+                    case .cut_left:
+                        print("Cutting left")
+                        DispatchQueue.main.async {
+                            window.moveSelection(direction: .left)
+                        }
+                    case .cut_right:
+                        print("Cutting right")
+                        DispatchQueue.main.async {
+                            window.moveSelection(direction: .right)
+                        }
+                    case .move_up:
+                        print("Moving up")
+                        DispatchQueue.main.async {
+                            window.moveSelectionArea(direction: .up)
+                        }
+                    case .move_down:
+                        print("Moving down")
+                        DispatchQueue.main.async {
+                            window.moveSelectionArea(direction: .down)
+                        }
+                    case .move_left:
+                        print("Moving left")
+                        DispatchQueue.main.async {
+                            window.moveSelectionArea(direction: .left)
+                        }
+                    case .move_right:
+                        print("Moving right")
+                        DispatchQueue.main.async {
+                            window.moveSelectionArea(direction: .right)
+                        }
+                    case .warp:
+                        print("Warping to selected area")
+                        DispatchQueue.main.async {
+                            window.warpToSelectedArea()
+                        }
+                    case .grid, .grid_nav, .history_back, .record, .playback, .windowzoom, .cursorzoom, .ignore:
+                        print("Action not implemented yet: \(action.rawValue)")
                     }
-                    return nil
-                case .left:
-                    print("Moving left")
-                    DispatchQueue.main.async {
-                        window.moveSelection(direction: .left)
-                    }
-                    return nil
-                case .down:
-                    print("Moving down")
-                    DispatchQueue.main.async {
-                        window.moveSelection(direction: .down)
-                    }
-                    return nil
-                case .right:
-                    print("Moving right")
-                    DispatchQueue.main.async {
-                        window.moveSelection(direction: .right)
-                    }
-                    return nil
-                case .click:
-                    print("Clicking")
-                    DispatchQueue.main.async {
-                        window.performClickAtSelectedArea()
-                        appDelegate.hideQuadrantWindow()
-                    }
-                    return nil
-                case .end:
-                    print("Hiding")
-                    DispatchQueue.main.async {
-                        appDelegate.hideQuadrantWindow()
-                    }
-                    return nil
-                case .reset:
-                    print("Resetting")
-                    DispatchQueue.main.async {
-                        window.resetToFullScreen()
-                    }
-                    return nil
-                case .quit:
-                    print("Quitting")
-                    DispatchQueue.main.async {
-                        NSApplication.shared.terminate(nil)
-                    }
-                    return nil
-                case .reload:
-                    print("Reloading keybindings")
-                    DispatchQueue.main.async {
-                        appDelegate.keyBindingManager?.reloadBindings()
-                    }
-                    return nil
-                case .cut_up:
-                    print("Cutting up")
-                    DispatchQueue.main.async {
-                        window.moveSelection(direction: .up)
-                    }
-                    return nil
-                case .cut_down:
-                    print("Cutting down")
-                    DispatchQueue.main.async {
-                        window.moveSelection(direction: .down)
-                    }
-                    return nil
-                case .cut_left:
-                    print("Cutting left")
-                    DispatchQueue.main.async {
-                        window.moveSelection(direction: .left)
-                    }
-                    return nil
-                case .cut_right:
-                    print("Cutting right")
-                    DispatchQueue.main.async {
-                        window.moveSelection(direction: .right)
-                    }
-                    return nil
-                case .move_up:
-                    print("Moving up")
-                    DispatchQueue.main.async {
-                        window.moveSelectionArea(direction: .up)
-                    }
-                    return nil
-                case .move_down:
-                    print("Moving down")
-                    DispatchQueue.main.async {
-                        window.moveSelectionArea(direction: .down)
-                    }
-                    return nil
-                case .move_left:
-                    print("Moving left")
-                    DispatchQueue.main.async {
-                        window.moveSelectionArea(direction: .left)
-                    }
-                    return nil
-                case .move_right:
-                    print("Moving right")
-                    DispatchQueue.main.async {
-                        window.moveSelectionArea(direction: .right)
-                    }
-                    return nil
-                case .warp:
-                    print("Warping to selected area")
-                    DispatchQueue.main.async {
-                        window.warpToSelectedArea()
-                    }
-                    return nil
-                case .grid, .grid_nav, .history_back, .record, .playback, .windowzoom, .cursorzoom, .ignore:
-                    print("Action not implemented yet: \(action.rawValue)")
-                    return nil
                 }
+
+                return nil
             },
             userInfo: Unmanaged.passUnretained(self).toOpaque()
         )

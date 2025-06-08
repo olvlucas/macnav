@@ -197,18 +197,16 @@ class QuadrantWindow: NSWindow {
         quadrantView.resetToFullScreen()
     }
 
-        func performClickAtSelectedArea() {
+    func performClickAtSelectedArea() {
         let selectedRect = quadrantView.getCurrentSelectedRect()
         let centerPoint = NSPoint(x: selectedRect.midX, y: selectedRect.midY)
 
         print("Selected rect: \(selectedRect)")
         print("Center point (window coords): \(centerPoint)")
 
-        // Convert to screen coordinates
         let screenRect = self.convertToScreen(NSRect(origin: centerPoint, size: NSSize.zero))
         let screenPoint = screenRect.origin
 
-        // macOS screen coordinates have origin at bottom-left, but CGEvent expects top-left
         let flippedScreenPoint = CGPoint(
             x: screenPoint.x,
             y: (NSScreen.main?.frame.height ?? 0) - screenPoint.y
@@ -226,6 +224,47 @@ class QuadrantWindow: NSWindow {
                 release.post(tap: CGEventTapLocation.cghidEventTap)
             }
             print("Click events posted")
+        } else {
+            print("Failed to create click events")
+        }
+    }
+
+    func performClickAtCurrentMousePosition(button: CGMouseButton) {
+        let currentMouseLocation = NSEvent.mouseLocation
+
+        let flippedScreenPoint = CGPoint(
+            x: currentMouseLocation.x,
+            y: (NSScreen.main?.frame.height ?? 0) - currentMouseLocation.y
+        )
+
+        print("Current mouse location: \(currentMouseLocation)")
+        print("Flipped screen point: \(flippedScreenPoint)")
+
+        let (downEventType, upEventType): (CGEventType, CGEventType)
+        switch button {
+        case .left:
+            downEventType = .leftMouseDown
+            upEventType = .leftMouseUp
+        case .right:
+            downEventType = .rightMouseDown
+            upEventType = .rightMouseUp
+        case .center:
+            downEventType = .otherMouseDown
+            upEventType = .otherMouseUp
+        @unknown default:
+            downEventType = .leftMouseDown
+            upEventType = .leftMouseUp
+        }
+
+        let clickEvent = CGEvent(mouseEventSource: nil, mouseType: downEventType, mouseCursorPosition: flippedScreenPoint, mouseButton: button)
+        let releaseEvent = CGEvent(mouseEventSource: nil, mouseType: upEventType, mouseCursorPosition: flippedScreenPoint, mouseButton: button)
+
+        if let click = clickEvent, let release = releaseEvent {
+            click.post(tap: CGEventTapLocation.cghidEventTap)
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.01) {
+                release.post(tap: CGEventTapLocation.cghidEventTap)
+            }
+            print("Click events posted at current mouse position")
         } else {
             print("Failed to create click events")
         }

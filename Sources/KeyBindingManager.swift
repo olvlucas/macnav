@@ -7,6 +7,9 @@ enum KeynavAction: String, CaseIterable {
     case left = "left"
     case right = "right"
     case click = "click"
+    case click1 = "click 1"
+    case click2 = "click 2"
+    case click3 = "click 3"
     case end = "end"
     case reset = "reset"
     case cut_up = "cut-up"
@@ -33,12 +36,18 @@ enum KeynavAction: String, CaseIterable {
 struct KeyBinding {
     let keyCode: UInt16
     let modifiers: NSEvent.ModifierFlags
-    let action: KeynavAction
+    let actions: [KeynavAction]
+
+    init(keyCode: UInt16, modifiers: NSEvent.ModifierFlags = [], actions: [KeynavAction]) {
+        self.keyCode = keyCode
+        self.modifiers = modifiers
+        self.actions = actions
+    }
 
     init(keyCode: UInt16, modifiers: NSEvent.ModifierFlags = [], action: KeynavAction) {
         self.keyCode = keyCode
         self.modifiers = modifiers
-        self.action = action
+        self.actions = [action]
     }
 }
 
@@ -60,12 +69,16 @@ class KeyBindingManager {
             KeyBinding(keyCode: 40, action: .up),       // k (vim up)
             KeyBinding(keyCode: 2, action: .right),     // d
             KeyBinding(keyCode: 37, action: .right),    // l (vim right)
-            KeyBinding(keyCode: 36, action: .click),    // Return/Enter
+            KeyBinding(keyCode: 36, actions: [.warp, .click1, .end]),    // Return
+            KeyBinding(keyCode: 52, actions: [.warp, .click1, .end]),    // Enter
             KeyBinding(keyCode: 53, action: .end),      // Escape
             KeyBinding(keyCode: 15, action: .reset),    // r
-            KeyBinding(keyCode: 49, action: .click),    // Space (alternative click)
+            KeyBinding(keyCode: 49, actions: [.warp, .click1, .end]),    // Space
             KeyBinding(keyCode: 3, action: .end),       // f (alternative end)
             KeyBinding(keyCode: 12, action: .quit),     // q
+            KeyBinding(keyCode: 18, action: .click1),   // 1
+            KeyBinding(keyCode: 19, action: .click2),   // 2
+            KeyBinding(keyCode: 20, action: .click3),   // 3
 
             KeyBinding(keyCode: 13, modifiers: .shift, action: .move_up),     // Shift+w
             KeyBinding(keyCode: 40, modifiers: .shift, action: .move_up),     // Shift+k
@@ -135,19 +148,26 @@ class KeyBindingManager {
         }
 
         let keyString = parts[0]
-        let actionString = parts[1]
+        let actionsString = parts[1..<parts.count].joined(separator: " ")
 
-        guard let action = KeynavAction(rawValue: actionString) else {
-            print("Unknown action: \(actionString)")
-            return
+        let actionStrings = actionsString.components(separatedBy: ",").map { $0.trimmingCharacters(in: .whitespaces) }
+        var actions: [KeynavAction] = []
+
+        for actionString in actionStrings {
+            if let action = KeynavAction(rawValue: actionString) {
+                actions.append(action)
+            } else {
+                print("Unknown action: \(actionString)")
+                return
+            }
         }
 
-        if let keyBinding = parseKeyString(keyString, action: action) {
+        if let keyBinding = parseKeyString(keyString, actions: actions) {
             addBinding(keyBinding)
         }
     }
 
-    private func parseKeyString(_ keyString: String, action: KeynavAction) -> KeyBinding? {
+    private func parseKeyString(_ keyString: String, actions: [KeynavAction]) -> KeyBinding? {
         var modifiers: NSEvent.ModifierFlags = []
         var keyPart = keyString
 
@@ -175,7 +195,7 @@ class KeyBindingManager {
             return nil
         }
 
-        return KeyBinding(keyCode: keyCode, modifiers: modifiers, action: action)
+        return KeyBinding(keyCode: keyCode, modifiers: modifiers, actions: actions)
     }
 
     private func keyCodeForKey(_ key: String) -> UInt16? {
@@ -206,11 +226,12 @@ class KeyBindingManager {
     private func addBinding(_ binding: KeyBinding) {
         bindings.removeAll { $0.keyCode == binding.keyCode && $0.modifiers == binding.modifiers }
         bindings.append(binding)
-        print("Added binding: \(binding.keyCode) (\(binding.modifiers.rawValue)) -> \(binding.action.rawValue)")
+        let actionsString = binding.actions.map { $0.rawValue }.joined(separator: ",")
+        print("Added binding: \(binding.keyCode) (\(binding.modifiers.rawValue)) -> \(actionsString)")
     }
 
-    func getAction(for keyCode: UInt16, modifiers: NSEvent.ModifierFlags = []) -> KeynavAction? {
-        return bindings.first { $0.keyCode == keyCode && $0.modifiers == modifiers }?.action
+    func getActions(for keyCode: UInt16, modifiers: NSEvent.ModifierFlags = []) -> [KeynavAction]? {
+        return bindings.first { $0.keyCode == keyCode && $0.modifiers == modifiers }?.actions
     }
 
     func getAllBindings() -> [KeyBinding] {

@@ -1,14 +1,17 @@
 # Sample .macnav configuration file
 # Place this file in your home directory as ~/.macnav
 #
-# Format: <key> <action>
+# Format: <key> <action1>,<action2>,<action3>
 # Modifiers can be used with + (ctrl+, shift+, alt+/option+, cmd+/super+)
 #
 # Available actions:
 # up, down, left, right - cut selection to quadrants (split in half)
 # move-up, move-down, move-left, move-right - move selection without changing size
 # cut-up, cut-down, cut-left, cut-right - cut the selection area (same as basic directional)
-# click - click at selected area and close overlay
+# click - click at selected area and close overlay (legacy)
+# click 1 - left click at current mouse position
+# click 2 - right click at current mouse position
+# click 3 - middle click at current mouse position
 # end - close overlay without clicking
 # reset - reset to full screen view
 # warp - warp mouse cursor to selection without clicking
@@ -35,13 +38,18 @@ a left
 s down
 d right
 
-# Actions
-return click
-enter click
-space click
+# Actions - keynav style with multiple commands
+return warp,click 1,end
+enter warp,click 1,end
+space warp,click 1,end
 escape end
 q quit
 r reset
+
+# Click actions at current mouse position
+1 click 1
+2 click 2
+3 click 3
 
 # Modified keys for moving (moves selection without changing size)
 shift+w move-up
@@ -72,5 +80,5 @@ g grid
 
 # Custom user bindings examples:
 # ctrl+shift+q quit
-# alt+space click
+# alt+space warp,click 1,end
 # cmd+r reset
