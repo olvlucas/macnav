@@ -40,7 +40,7 @@ Each Shift+navigation key moves the selection area without changing size:
 
 ### Global Shortcuts
 
-- **Option+Shift+S**: Toggle the navigation overlay on/off
+- **Ctrl+Semicolon**: Toggle the navigation overlay on/off (customizable via .macnav file)
 
 ### Default Navigation (when overlay is visible)
 
@@ -94,6 +94,7 @@ Multiple actions can be chained together using commas, following keynav's syntax
 
 ### Available Actions
 
+- `start` - Toggle the overlay on/off (customizable activation shortcut)
 - `up`, `down`, `left`, `right` - Cut selection to quadrant (splits in half)
 - `move-up`, `move-down`, `move-left`, `move-right` - Move selection area without changing size
 - `cut-up`, `cut-down`, `cut-left`, `cut-right` - Cut the selection area (same as basic directional commands)
@@ -118,6 +119,9 @@ Multiple actions can be chained together using commas, following keynav's syntax
 ### Example Configuration
 
 ```
+# Toggle overlay (keynav default)
+ctrl+semicolon start
+
 # Vim-style navigation
 h left
 j down
@@ -158,6 +162,21 @@ Use lowercase letters (`a-z`), numbers (`0-9`), or special keys:
 - `leftbracket`, `rightbracket`, `backslash`, `slash`
 
 The configuration file is loaded on startup. You can also reload keybindings during runtime by pressing `Ctrl+R` (or your custom reload binding) while the overlay is active.
+
+### Customizing the Start/Toggle Keybinding
+
+The global shortcut to toggle the overlay can be customized using the `start` action. This allows you to change the activation key from the default `Ctrl+Semicolon` to any combination you prefer:
+
+```
+# Examples of custom start keybindings
+ctrl+semicolon start           # Default (keynav style)
+alt+shift+s start              # Original macnav style
+cmd+space start                # Command + Space
+f12 start                      # Single function key
+ctrl+shift+space start         # Multiple modifiers
+```
+
+Multiple start keybindings can be defined if you want several ways to activate the overlay. If no start binding is defined in your `.macnav` file, the default `Ctrl+Semicolon` binding will be used.
 
 ## Visual Elements
 
@@ -218,7 +237,7 @@ Then build and run from Xcode using Command+R.
 
 ### Basic Navigation (Area Cutting)
 1. **Open any application** (browser, text editor, etc.)
-2. **Press Option+Shift+S** - navigation overlay appears
+2. **Press Ctrl+Semicolon** - navigation overlay appears
 3. **Press A** - cuts to left half of screen
 4. **Press W** - cuts to upper half of the left half
 5. **Press D** - cuts to right half of that area
@@ -226,7 +245,7 @@ Then build and run from Xcode using Command+R.
 7. **Press Enter** - clicks at that location and hides overlay
 
 ### Advanced Navigation (Area Moving)
-1. **Press Option+Shift+S** - navigation overlay appears
+1. **Press Ctrl+Semicolon** - navigation overlay appears
 2. **Press A** then **W** - cut to upper left area
 3. **Press Shift+D** - move the selection area to the right without changing size
 4. **Press Shift+S** - move the selection area down

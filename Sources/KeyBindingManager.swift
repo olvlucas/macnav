@@ -31,6 +31,7 @@ enum KeynavAction: String, CaseIterable {
     case ignore = "ignore"
     case quit = "quit"
     case reload = "reload"
+    case start = "start"
 }
 
 struct KeyBinding {
@@ -105,6 +106,8 @@ class KeyBindingManager {
             KeyBinding(keyCode: 43, action: .windowzoom), // comma
             KeyBinding(keyCode: 47, action: .cursorzoom), // period
             KeyBinding(keyCode: 15, modifiers: [.control, .shift], action: .reload), // Ctrl+Shift+r
+
+            KeyBinding(keyCode: 41, modifiers: .control, action: .start), // Ctrl+semicolon (default start binding)
         ]
     }
 
@@ -236,6 +239,10 @@ class KeyBindingManager {
 
     func getAllBindings() -> [KeyBinding] {
         return bindings
+    }
+
+    func getStartBindings() -> [KeyBinding] {
+        return bindings.filter { $0.actions.contains(.start) }
     }
 
     func reloadBindings() {

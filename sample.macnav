@@ -5,6 +5,7 @@
 # Modifiers can be used with + (ctrl+, shift+, alt+/option+, cmd+/super+)
 #
 # Available actions:
+# start - toggle the overlay on/off (customizable activation shortcut)
 # up, down, left, right - cut selection to quadrants (split in half)
 # move-up, move-down, move-left, move-right - move selection without changing size
 # cut-up, cut-down, cut-left, cut-right - cut the selection area (same as basic directional)
@@ -19,6 +20,13 @@
 # quit - quit the application
 # reload - reload keybindings from .macnav file
 # ignore - ignore the key
+
+# Toggle overlay (keynav default: ctrl+semicolon start)
+# You can customize this to your preference:
+# alt+shift+s start        # original macnav style
+# cmd+space start          # Command + Space
+# f12 start                # single function key
+ctrl+semicolon start
 
 # Movement keys (vim-style)
 h left

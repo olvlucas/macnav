@@ -21,13 +21,22 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     }
 
     func setupToggleShortcut() {
-        let mask: NSEvent.ModifierFlags = [.option, .shift]
-        let keyCode: UInt16 = 1
-
         toggleEventMonitor = NSEvent.addGlobalMonitorForEvents(matching: .keyDown) { [weak self] event in
-            if event.modifierFlags.contains(mask) && event.keyCode == keyCode {
-                print("Shortcut pressed!")
-                self?.toggleQuadrantWindow()
+            guard let keyBindingManager = self?.keyBindingManager else { return }
+
+            let startBindings = keyBindingManager.getStartBindings()
+            let keyCode = UInt16(event.keyCode)
+            let rawFlags = event.modifierFlags.rawValue
+            let relevantFlags: UInt = 0x00FF0000
+            let maskedFlags = rawFlags & relevantFlags
+            let modifiers = NSEvent.ModifierFlags(rawValue: maskedFlags)
+
+            for binding in startBindings {
+                if binding.keyCode == keyCode && binding.modifiers == modifiers {
+                    print("Start shortcut pressed!")
+                    self?.toggleQuadrantWindow()
+                    break
+                }
             }
         }
     }
@@ -169,6 +178,11 @@ class AppDelegate: NSObject, NSApplicationDelegate {
                         print("Warping to selected area")
                         DispatchQueue.main.async {
                             window.warpToSelectedArea()
+                        }
+                    case .start:
+                        print("Start action executed")
+                        DispatchQueue.main.async {
+                            appDelegate.toggleQuadrantWindow()
                         }
                     case .grid, .grid_nav, .history_back, .record, .playback, .windowzoom, .cursorzoom, .ignore:
                         print("Action not implemented yet: \(action.rawValue)")
