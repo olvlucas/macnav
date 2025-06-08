@@ -135,6 +135,13 @@ playground.xcworkspace
 
 .build/
 
+# Release artifacts
+*.app
+*.dmg
+*.tar.gz
+*.zip
+release_notes.txt
+
 # CocoaPods
 #
 # We recommend against adding the Pods directory to your .gitignore. However

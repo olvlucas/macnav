@@ -1,0 +1,77 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+
+jobs:
+  create-release:
+    name: Create Release
+    runs-on: macos-latest
+
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
+    - name: Setup Swift
+      uses: swift-actions/setup-swift@v1
+      with:
+        swift-version: "5.9"
+
+    - name: Get version from tag
+      id: get_version
+      run: |
+        VERSION=${GITHUB_REF#refs/tags/v}
+        echo "VERSION=$VERSION" >> $GITHUB_OUTPUT
+        echo "version=$VERSION" >> $GITHUB_ENV
+
+    - name: Update VERSION file
+      run: echo "${{ env.version }}" > VERSION
+
+    - name: Build release
+      run: make release
+
+    - name: Install create-dmg
+      run: brew install create-dmg
+
+    - name: Create DMG
+      run: make dmg
+
+    - name: Create release archive
+      run: |
+        tar -czf macnav-${{ env.version }}-macos.tar.gz -C .build/release macnav
+        zip -r macnav-${{ env.version }}-macos.zip macnav.app
+
+    - name: Generate release notes
+      id: release_notes
+      run: |
+        if [ -f CHANGELOG.md ]; then
+          # Extract release notes for this version from CHANGELOG.md
+          sed -n "/## \[${{ env.version }}\]/,/## \[/p" CHANGELOG.md | sed '$d' > release_notes.txt
+          if [ ! -s release_notes.txt ]; then
+            echo "Release ${{ env.version }}" > release_notes.txt
+            echo "" >> release_notes.txt
+            echo "See CHANGELOG.md for full details." >> release_notes.txt
+          fi
+        else
+          echo "Release ${{ env.version }}" > release_notes.txt
+        fi
+
+    - name: Create GitHub Release
+      uses: softprops/action-gh-release@v1
+      with:
+        name: "macnav v${{ env.version }}"
+        body_path: release_notes.txt
+        files: |
+          macnav-${{ env.version }}-macos.tar.gz
+          macnav-${{ env.version }}-macos.zip
+          macnav-${{ env.version }}.dmg
+        draft: false
+        prerelease: ${{ contains(env.version, 'beta') || contains(env.version, 'alpha') || contains(env.version, 'rc') }}
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

@@ -4,7 +4,7 @@ import PackageDescription
 let package = Package(
     name: "macnav",
     platforms: [
-        .macOS(.v12) // Specify macOS 12.0 or later
+        .macOS(.v12)
     ],
     products: [
         .executable(name: "macnav", targets: ["macnav"])

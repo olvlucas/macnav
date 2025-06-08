@@ -1,0 +1,71 @@
+name: CI
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+
+jobs:
+  test:
+    name: Test on macOS
+    runs-on: macos-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Setup Swift
+      uses: swift-actions/setup-swift@v1
+      with:
+        swift-version: "5.9"
+
+    - name: Cache Swift packages
+      uses: actions/cache@v3
+      with:
+        path: .build
+        key: ${{ runner.os }}-spm-${{ hashFiles('Package.swift') }}
+        restore-keys: |
+          ${{ runner.os }}-spm-
+
+    - name: Check dependencies
+      run: make check-deps
+
+    - name: Run tests
+      run: make test
+
+    - name: Build release
+      run: make build
+
+    - name: Verify binary
+      run: |
+        ls -la .build/release/
+        file .build/release/macnav
+
+  build-universal:
+    name: Build Universal Binary
+    runs-on: macos-latest
+    needs: test
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Setup Swift
+      uses: swift-actions/setup-swift@v1
+      with:
+        swift-version: "5.9"
+
+    - name: Build universal binary
+      run: |
+        swift build -c release --arch arm64 --arch x86_64
+
+    - name: Create app bundle
+      run: make bundle
+
+    - name: Upload build artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: macnav-macos
+        path: |
+          .build/release/macnav
+          macnav.app/
+        retention-days: 30
