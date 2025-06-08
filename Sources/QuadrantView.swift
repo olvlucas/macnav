@@ -153,17 +153,38 @@ class QuadrantWindow: NSWindow {
         quadrantView.resetToFullScreen()
     }
 
-    func performClickAtSelectedArea() {
+        func performClickAtSelectedArea() {
         let selectedRect = quadrantView.getCurrentSelectedRect()
         let centerPoint = NSPoint(x: selectedRect.midX, y: selectedRect.midY)
 
-        let screenPoint = self.convertPoint(toScreen: centerPoint)
+        print("Selected rect: \(selectedRect)")
+        print("Center point (window coords): \(centerPoint)")
 
-        let clickEvent = CGEvent(mouseEventSource: nil, mouseType: .leftMouseDown, mouseCursorPosition: CGPoint(x: screenPoint.x, y: screenPoint.y), mouseButton: .left)
-        let releaseEvent = CGEvent(mouseEventSource: nil, mouseType: .leftMouseUp, mouseCursorPosition: CGPoint(x: screenPoint.x, y: screenPoint.y), mouseButton: .left)
+        // Convert to screen coordinates
+        let screenRect = self.convertToScreen(NSRect(origin: centerPoint, size: NSSize.zero))
+        let screenPoint = screenRect.origin
 
-        clickEvent?.post(tap: .cghidEventTap)
-        releaseEvent?.post(tap: .cghidEventTap)
+        // macOS screen coordinates have origin at bottom-left, but CGEvent expects top-left
+        let flippedScreenPoint = CGPoint(
+            x: screenPoint.x,
+            y: (NSScreen.main?.frame.height ?? 0) - screenPoint.y
+        )
+
+        print("Screen point: \(screenPoint)")
+        print("Flipped screen point: \(flippedScreenPoint)")
+
+        let clickEvent = CGEvent(mouseEventSource: nil, mouseType: .leftMouseDown, mouseCursorPosition: flippedScreenPoint, mouseButton: .left)
+        let releaseEvent = CGEvent(mouseEventSource: nil, mouseType: .leftMouseUp, mouseCursorPosition: flippedScreenPoint, mouseButton: .left)
+
+        if let click = clickEvent, let release = releaseEvent {
+            click.post(tap: CGEventTapLocation.cghidEventTap)
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.01) {
+                release.post(tap: CGEventTapLocation.cghidEventTap)
+            }
+            print("Click events posted")
+        } else {
+            print("Failed to create click events")
+        }
     }
 
     override func makeKeyAndOrderFront(_ sender: Any?) {
