@@ -240,7 +240,7 @@ class QuadrantWindow: NSWindow {
         }
     }
 
-    func performClickAtCurrentMousePosition(button: CGMouseButton) {
+            func performClickAtCurrentMousePosition(button: CGMouseButton) {
         let currentMouseLocation = NSEvent.mouseLocation
 
         let globalScreenHeight = NSScreen.screens.map { $0.frame.maxY }.max() ?? (NSScreen.main?.frame.height ?? 0)
@@ -274,7 +274,7 @@ class QuadrantWindow: NSWindow {
 
         if let click = clickEvent, let release = releaseEvent {
             click.post(tap: CGEventTapLocation.cghidEventTap)
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.01) {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.02) {
                 release.post(tap: CGEventTapLocation.cghidEventTap)
             }
             print("Click events posted at current mouse position")
@@ -282,6 +282,8 @@ class QuadrantWindow: NSWindow {
             print("Failed to create click events")
         }
     }
+
+
 
     func warpToSelectedArea() {
         let selectedRect = quadrantView.getCurrentSelectedRect()
