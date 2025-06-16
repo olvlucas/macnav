@@ -19,6 +19,12 @@
 # grid - show grid overlay (not implemented yet)
 # quit - quit the application
 # reload - reload keybindings from .macnav file
+# monitor-left - switch to monitor to the left
+# monitor-right - switch to monitor to the right
+# monitor-up - switch to monitor above
+# monitor-down - switch to monitor below
+# monitor-next - switch to next monitor (not implemented)
+# monitor-prev - switch to previous monitor (not implemented)
 # ignore - ignore the key
 
 # Toggle overlay (keynav default: ctrl+semicolon start)
@@ -79,6 +85,16 @@ ctrl+h cut-left
 ctrl+j cut-down
 ctrl+l cut-right
 
+# Monitor switching bindings
+ctrl+shift+a monitor-left
+ctrl+shift+h monitor-left
+ctrl+shift+d monitor-right
+ctrl+shift+l monitor-right
+ctrl+shift+w monitor-up
+ctrl+shift+k monitor-up
+ctrl+shift+s monitor-down
+ctrl+shift+j monitor-down
+
 # Additional bindings
 ctrl+c end
 ctrl+r reload
@@ -90,3 +106,13 @@ g grid
 # ctrl+shift+q quit
 # alt+space warp,click 1,end
 # cmd+r reset
+
+# Monitor switching examples:
+# Use Ctrl+Shift with movement keys to switch between monitors
+# The system will automatically detect which monitor is in the specified direction
+# If you have a 2-monitor setup side by side, use:
+#   ctrl+shift+a or ctrl+shift+h to go left
+#   ctrl+shift+d or ctrl+shift+l to go right
+# If you have monitors stacked vertically, use:
+#   ctrl+shift+w or ctrl+shift+k to go up
+#   ctrl+shift+s or ctrl+shift+j to go down

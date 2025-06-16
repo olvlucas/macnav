@@ -32,6 +32,12 @@ enum KeynavAction: String, CaseIterable {
     case quit = "quit"
     case reload = "reload"
     case start = "start"
+    case monitor_left = "monitor-left"
+    case monitor_right = "monitor-right"
+    case monitor_up = "monitor-up"
+    case monitor_down = "monitor-down"
+    case monitor_next = "monitor-next"
+    case monitor_prev = "monitor-prev"
 }
 
 struct KeyBinding {
@@ -106,6 +112,15 @@ class KeyBindingManager {
             KeyBinding(keyCode: 43, action: .windowzoom), // comma
             KeyBinding(keyCode: 47, action: .cursorzoom), // period
             KeyBinding(keyCode: 15, modifiers: [.control, .shift], action: .reload), // Ctrl+Shift+r
+
+            KeyBinding(keyCode: 0, modifiers: [.control, .shift], action: .monitor_left),   // Ctrl+Shift+a
+            KeyBinding(keyCode: 4, modifiers: [.control, .shift], action: .monitor_left),   // Ctrl+Shift+h
+            KeyBinding(keyCode: 2, modifiers: [.control, .shift], action: .monitor_right),  // Ctrl+Shift+d
+            KeyBinding(keyCode: 37, modifiers: [.control, .shift], action: .monitor_right), // Ctrl+Shift+l
+            KeyBinding(keyCode: 13, modifiers: [.control, .shift], action: .monitor_up),    // Ctrl+Shift+w
+            KeyBinding(keyCode: 40, modifiers: [.control, .shift], action: .monitor_up),    // Ctrl+Shift+k
+            KeyBinding(keyCode: 1, modifiers: [.control, .shift], action: .monitor_down),   // Ctrl+Shift+s
+            KeyBinding(keyCode: 38, modifiers: [.control, .shift], action: .monitor_down),  // Ctrl+Shift+j
 
             KeyBinding(keyCode: 41, modifiers: .control, action: .start), // Ctrl+semicolon (default start binding)
         ]

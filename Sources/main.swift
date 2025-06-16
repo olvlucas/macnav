@@ -5,6 +5,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     var toggleEventMonitor: Any?
     var eventTap: CFMachPort?
     var keyBindingManager: KeyBindingManager?
+    var currentQuadrantScreen: NSScreen?
 
     func applicationDidFinishLaunching(_ aNotification: Notification) {
         print("macnav application started!")
@@ -184,6 +185,28 @@ class AppDelegate: NSObject, NSApplicationDelegate {
                         DispatchQueue.main.async {
                             appDelegate.toggleQuadrantWindow()
                         }
+                    case .monitor_left:
+                        print("Switching to left monitor")
+                        DispatchQueue.main.async {
+                            appDelegate.switchToMonitor(direction: .left)
+                        }
+                    case .monitor_right:
+                        print("Switching to right monitor")
+                        DispatchQueue.main.async {
+                            appDelegate.switchToMonitor(direction: .right)
+                        }
+                    case .monitor_up:
+                        print("Switching to upper monitor")
+                        DispatchQueue.main.async {
+                            appDelegate.switchToMonitor(direction: .up)
+                        }
+                    case .monitor_down:
+                        print("Switching to lower monitor")
+                        DispatchQueue.main.async {
+                            appDelegate.switchToMonitor(direction: .down)
+                        }
+                    case .monitor_next, .monitor_prev:
+                        print("Monitor next/prev not implemented yet")
                     case .grid, .grid_nav, .history_back, .record, .playback, .windowzoom, .cursorzoom, .ignore:
                         print("Action not implemented yet: \(action.rawValue)")
                     }
@@ -213,21 +236,90 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         }
     }
 
-    func toggleQuadrantWindow() {
-        if quadrantWindow == nil {
-            guard let mainScreen = NSScreen.main else {
-                print("Could not get main screen.")
-                return
+        func getCurrentScreen() -> NSScreen? {
+        let mouseLocation = NSEvent.mouseLocation
+
+        for screen in NSScreen.screens {
+            if screen.frame.contains(mouseLocation) {
+                return screen
             }
-            quadrantWindow = QuadrantWindow(screen: mainScreen)
         }
 
-        if let window = quadrantWindow {
-            if window.isVisible {
-                hideQuadrantWindow()
-            } else {
-                showQuadrantWindow()
+        return NSScreen.main
+    }
+
+    func findMonitorInDirection(_ direction: MovementDirection, from currentScreen: NSScreen) -> NSScreen? {
+        let currentFrame = currentScreen.frame
+        let screens = NSScreen.screens
+
+        var bestScreen: NSScreen?
+        var bestDistance: CGFloat = CGFloat.greatestFiniteMagnitude
+
+        for screen in screens {
+            guard screen != currentScreen else { continue }
+
+            let screenFrame = screen.frame
+            var isInDirection = false
+            var distance: CGFloat = 0
+
+            switch direction {
+            case .left:
+                isInDirection = screenFrame.maxX <= currentFrame.minX
+                distance = currentFrame.minX - screenFrame.maxX
+            case .right:
+                isInDirection = screenFrame.minX >= currentFrame.maxX
+                distance = screenFrame.minX - currentFrame.maxX
+            case .up:
+                isInDirection = screenFrame.minY >= currentFrame.maxY
+                distance = screenFrame.minY - currentFrame.maxY
+            case .down:
+                isInDirection = screenFrame.maxY <= currentFrame.minY
+                distance = currentFrame.minY - screenFrame.maxY
             }
+
+            if isInDirection && distance < bestDistance {
+                bestDistance = distance
+                bestScreen = screen
+            }
+        }
+
+        return bestScreen
+    }
+
+                func switchToMonitor(direction: MovementDirection) {
+        // Use the screen where the quadrant window is currently displayed, not mouse location
+        guard let currentScreen = currentQuadrantScreen else { return }
+
+        let targetScreen = findMonitorInDirection(direction, from: currentScreen) ?? currentScreen
+
+        if targetScreen != currentScreen {
+            // Remove the old event tap first to prevent conflicts
+            removeEventTap()
+
+            // Hide the current window
+            if let currentWindow = quadrantWindow {
+                currentWindow.orderOut(nil)
+            }
+
+            // Create new window on target screen and update tracking
+            quadrantWindow = QuadrantWindow(screen: targetScreen)
+            currentQuadrantScreen = targetScreen
+            showQuadrantWindow()
+            print("Switched to monitor: \(targetScreen.localizedName)")
+        }
+    }
+
+    func toggleQuadrantWindow() {
+        if let window = quadrantWindow, window.isVisible {
+            hideQuadrantWindow()
+        } else {
+            guard let currentScreen = getCurrentScreen() else {
+                print("Could not get current screen.")
+                return
+            }
+            quadrantWindow = QuadrantWindow(screen: currentScreen)
+            currentQuadrantScreen = currentScreen
+            showQuadrantWindow()
         }
     }
 
@@ -244,6 +336,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         guard let window = quadrantWindow else { return }
         window.orderOut(nil)
         removeEventTap()
+        currentQuadrantScreen = nil
         print("Quadrants hidden")
     }
 
