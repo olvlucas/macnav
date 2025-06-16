@@ -36,8 +36,6 @@ enum KeynavAction: String, CaseIterable {
     case monitor_right = "monitor-right"
     case monitor_up = "monitor-up"
     case monitor_down = "monitor-down"
-    case monitor_next = "monitor-next"
-    case monitor_prev = "monitor-prev"
 }
 
 struct KeyBinding {

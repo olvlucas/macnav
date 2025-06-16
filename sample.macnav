@@ -23,8 +23,6 @@
 # monitor-right - switch to monitor to the right
 # monitor-up - switch to monitor above
 # monitor-down - switch to monitor below
-# monitor-next - switch to next monitor (not implemented)
-# monitor-prev - switch to previous monitor (not implemented)
 # ignore - ignore the key
 
 # Toggle overlay (keynav default: ctrl+semicolon start)

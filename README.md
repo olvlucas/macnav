@@ -118,8 +118,6 @@ Multiple actions can be chained together using commas, following keynav's syntax
 - `monitor-right` - Switch to monitor to the right
 - `monitor-up` - Switch to monitor above
 - `monitor-down` - Switch to monitor below
-- `monitor-next` - Switch to next monitor (not implemented)
-- `monitor-prev` - Switch to previous monitor (not implemented)
 - `ignore` - Ignore the key
 
 ### Supported Modifiers

@@ -205,8 +205,6 @@ class AppDelegate: NSObject, NSApplicationDelegate {
                         DispatchQueue.main.async {
                             appDelegate.switchToMonitor(direction: .down)
                         }
-                    case .monitor_next, .monitor_prev:
-                        print("Monitor next/prev not implemented yet")
                     case .grid, .grid_nav, .history_back, .record, .playback, .windowzoom, .cursorzoom, .ignore:
                         print("Action not implemented yet: \(action.rawValue)")
                     }
