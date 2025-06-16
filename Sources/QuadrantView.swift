@@ -204,15 +204,26 @@ class QuadrantWindow: NSWindow {
         print("Selected rect: \(selectedRect)")
         print("Center point (window coords): \(centerPoint)")
 
-        let screenRect = self.convertToScreen(NSRect(origin: centerPoint, size: NSSize.zero))
-        let screenPoint = screenRect.origin
+        guard let currentScreen = self.screen else {
+            print("Could not get current screen for clicking")
+            return
+        }
 
-        let flippedScreenPoint = CGPoint(
-            x: screenPoint.x,
-            y: (NSScreen.main?.frame.height ?? 0) - screenPoint.y
+        let windowOrigin = self.frame.origin
+        let screenPoint = NSPoint(
+            x: windowOrigin.x + centerPoint.x,
+            y: windowOrigin.y + centerPoint.y
         )
 
+        let globalScreenHeight = NSScreen.screens.map { $0.frame.maxY }.max() ?? currentScreen.frame.height
+        let flippedScreenPoint = CGPoint(
+            x: screenPoint.x,
+            y: globalScreenHeight - screenPoint.y
+        )
+
+        print("Window origin: \(windowOrigin)")
         print("Screen point: \(screenPoint)")
+        print("Global screen height: \(globalScreenHeight)")
         print("Flipped screen point: \(flippedScreenPoint)")
 
         let clickEvent = CGEvent(mouseEventSource: nil, mouseType: .leftMouseDown, mouseCursorPosition: flippedScreenPoint, mouseButton: .left)
@@ -232,12 +243,14 @@ class QuadrantWindow: NSWindow {
     func performClickAtCurrentMousePosition(button: CGMouseButton) {
         let currentMouseLocation = NSEvent.mouseLocation
 
+        let globalScreenHeight = NSScreen.screens.map { $0.frame.maxY }.max() ?? (NSScreen.main?.frame.height ?? 0)
         let flippedScreenPoint = CGPoint(
             x: currentMouseLocation.x,
-            y: (NSScreen.main?.frame.height ?? 0) - currentMouseLocation.y
+            y: globalScreenHeight - currentMouseLocation.y
         )
 
         print("Current mouse location: \(currentMouseLocation)")
+        print("Global screen height: \(globalScreenHeight)")
         print("Flipped screen point: \(flippedScreenPoint)")
 
         let (downEventType, upEventType): (CGEventType, CGEventType)
@@ -277,16 +290,27 @@ class QuadrantWindow: NSWindow {
         print("Selected rect: \(selectedRect)")
         print("Center point (window coords): \(centerPoint)")
 
-        let screenRect = self.convertToScreen(NSRect(origin: centerPoint, size: NSSize.zero))
-        let screenPoint = screenRect.origin
+        guard let currentScreen = self.screen else {
+            print("Could not get current screen for warping")
+            return
+        }
 
-        let flippedScreenPoint = CGPoint(
-            x: screenPoint.x,
-            y: (NSScreen.main?.frame.height ?? 0) - screenPoint.y
+        let windowOrigin = self.frame.origin
+        let screenPoint = NSPoint(
+            x: windowOrigin.x + centerPoint.x,
+            y: windowOrigin.y + centerPoint.y
         )
 
-        print("Warping to screen point: \(screenPoint)")
-        print("Warping to flipped screen point: \(flippedScreenPoint)")
+        let globalScreenHeight = NSScreen.screens.map { $0.frame.maxY }.max() ?? currentScreen.frame.height
+        let flippedScreenPoint = CGPoint(
+            x: screenPoint.x,
+            y: globalScreenHeight - screenPoint.y
+        )
+
+        print("Window origin: \(windowOrigin)")
+        print("Screen point: \(screenPoint)")
+        print("Global screen height: \(globalScreenHeight)")
+        print("Flipped screen point: \(flippedScreenPoint)")
 
         let moveEvent = CGEvent(mouseEventSource: nil, mouseType: .mouseMoved, mouseCursorPosition: flippedScreenPoint, mouseButton: .left)
 
