@@ -14,6 +14,7 @@ This project replicates the functionality of the original Keynav tool, enabling 
 - ✅ Event interception to prevent key conflicts with other apps
 - ✅ Visual feedback with center point highlighting
 - ✅ Custom keybinding configuration support
+- ✅ Multi-monitor support with intelligent screen detection
 
 ## How It Works
 
@@ -73,6 +74,12 @@ Each Shift+navigation key moves the selection area without changing size:
 - **Q**: Quit application
 - **Ctrl+Shift+R**: Reload keybindings from config file
 
+#### Monitor Switching (multi-monitor setups)
+- **Ctrl+Shift+A** or **Ctrl+Shift+H**: Switch to monitor to the left
+- **Ctrl+Shift+D** or **Ctrl+Shift+L**: Switch to monitor to the right
+- **Ctrl+Shift+W** or **Ctrl+Shift+K**: Switch to monitor above
+- **Ctrl+Shift+S** or **Ctrl+Shift+J**: Switch to monitor below
+
 _Note: When the overlay is active, navigation keys are intercepted and won't reach other applications._
 
 ## Custom Keybindings
@@ -107,6 +114,10 @@ Multiple actions can be chained together using commas, following keynav's syntax
 - `warp` - Warp mouse cursor to selected area without clicking
 - `quit` - Quit the application
 - `reload` - Reload keybindings from .macnav file
+- `monitor-left` - Switch to monitor to the left
+- `monitor-right` - Switch to monitor to the right
+- `monitor-up` - Switch to monitor above
+- `monitor-down` - Switch to monitor below
 - `ignore` - Ignore the key
 
 ### Supported Modifiers
@@ -146,6 +157,16 @@ ctrl+a cut-left
 # Modified keys for moving
 shift+w move-up
 shift+a move-left
+
+# Monitor switching (for multi-monitor setups)
+ctrl+shift+a monitor-left
+ctrl+shift+h monitor-left
+ctrl+shift+d monitor-right
+ctrl+shift+l monitor-right
+ctrl+shift+w monitor-up
+ctrl+shift+k monitor-up
+ctrl+shift+s monitor-down
+ctrl+shift+j monitor-down
 
 # Other actions
 ctrl+c end
@@ -193,7 +214,7 @@ The overlay displays:
 
 The easiest way to install macnav is to download a pre-built release:
 
-1. Go to the [Releases page](https://github.com/Lucas-dOliveira/macnav/releases)
+1. Go to the [Releases page](https://github.com/olvlucas/macnav/releases)
 2. Download the latest release:
    - **macnav-X.X.X.dmg** - Drag and drop installer (recommended for most users)
    - **macnav-X.X.X-macos.zip** - Contains the app bundle
@@ -218,7 +239,7 @@ If you prefer command-line tools or want to build from source:
 #### Install via Make (requires source code)
 ```bash
 # Clone the repository
-git clone https://github.com/Lucas-dOliveira/macnav.git
+git clone https://github.com/olvlucas/macnav.git
 cd macnav
 
 # Build and install to /usr/local/bin
@@ -231,7 +252,7 @@ macnav
 #### Install Binary Only
 ```bash
 # Download and extract the binary
-curl -L https://github.com/Lucas-dOliveira/macnav/releases/latest/download/macnav-X.X.X-macos.tar.gz | tar xz
+curl -L https://github.com/olvlucas/macnav/releases/latest/download/macnav-X.X.X-macos.tar.gz | tar xz
 
 # Move to your PATH
 sudo mv macnav /usr/local/bin/
@@ -290,7 +311,7 @@ To verify installation is working:
 
 ```bash
 # Clone the repository
-git clone https://github.com/Lucas-dOliveira/macnav.git
+git clone https://github.com/olvlucas/macnav.git
 cd macnav
 
 # Build the project (creates universal binary)
@@ -358,6 +379,35 @@ make check-deps
 4. **Press Shift+S** - move the selection area down
 5. **Fine-tune position** using more move commands
 6. **Press Enter** - clicks at that location and hides overlay
+
+## Multi-Monitor Support
+
+macnav intelligently detects and supports multiple monitor setups, allowing seamless navigation across screens using keyboard shortcuts.
+
+### How Multi-Monitor Detection Works
+
+- **Initial placement**: When you first activate macnav, it appears on the monitor containing your mouse cursor
+- **Intelligent switching**: Use `Ctrl+Shift` + directional keys to move to adjacent monitors
+- **Spatial awareness**: The system detects monitor positions and finds the closest screen in the specified direction
+- **Persistent navigation**: Once you switch to a monitor, subsequent navigation stays relative to that screen until you switch again
+
+### Multi-Monitor Navigation
+
+1. **Activate macnav** on your current monitor with `Ctrl+Semicolon`
+2. **Switch monitors** using:
+   - `Ctrl+Shift+A` or `Ctrl+Shift+H` - Move to left monitor
+   - `Ctrl+Shift+D` or `Ctrl+Shift+L` - Move to right monitor
+   - `Ctrl+Shift+W` or `Ctrl+Shift+K` - Move to monitor above
+   - `Ctrl+Shift+S` or `Ctrl+Shift+J` - Move to monitor below
+3. **Navigate normally** within the selected monitor using WASD/HJKL keys
+4. **Click and close** with Enter, or switch to another monitor
+
+### Supported Monitor Layouts
+
+- ✅ **Side-by-side**: Horizontal monitor arrangements
+- ✅ **Stacked**: Vertical monitor arrangements
+- ✅ **Mixed layouts**: Complex arrangements with monitors in different positions
+- ✅ **Any number of monitors**: Works with 2+ monitor setups
 
 ## Troubleshooting
 
