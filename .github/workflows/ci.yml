@@ -65,18 +65,44 @@ jobs:
 
     - name: Build universal binary
       run: |
-        swift build -c release --arch arm64 --arch x86_64
+        swift build -c release --arch arm64
+        swift build -c release --arch x86_64
+        mkdir -p .build/universal
+        lipo -create -output .build/universal/macnav .build/arm64-apple-macosx/release/macnav .build/x86_64-apple-macosx/release/macnav
 
     - name: Create app bundle
-      run: make bundle
-      env:
-        CI: true
+      run: |
+        mkdir -p macnav.app/Contents/MacOS
+        mkdir -p macnav.app/Contents/Resources
+        cp .build/universal/macnav macnav.app/Contents/MacOS/macnav
+        cat > macnav.app/Contents/Info.plist << 'EOF'
+        <?xml version="1.0" encoding="UTF-8"?>
+        <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+        <plist version="1.0">
+        <dict>
+        	<key>CFBundleExecutable</key>
+        	<string>macnav</string>
+        	<key>CFBundleIdentifier</key>
+        	<string>com.macnav.macnav</string>
+        	<key>CFBundleName</key>
+        	<string>macnav</string>
+        	<key>CFBundleVersion</key>
+        	<string>$(cat VERSION)</string>
+        	<key>CFBundleShortVersionString</key>
+        	<string>$(cat VERSION)</string>
+        	<key>CFBundleInfoDictionaryVersion</key>
+        	<string>6.0</string>
+        	<key>CFBundlePackageType</key>
+        	<string>APPL</string>
+        	<key>LSMinimumSystemVersion</key>
+        	<string>12.0</string>
+        	<key>LSApplicationCategoryType</key>
+        	<string>public.app-category.utilities</string>
+        	<key>NSHighResolutionCapable</key>
+        	<true/>
+        	<key>LSUIElement</key>
+        	<true/>
+        </dict>
+        </plist>
+        EOF
 
-    - name: Upload build artifacts
-      uses: actions/upload-artifact@v4
-      with:
-        name: macnav-macos
-        path: |
-          .build/release/macnav
-          macnav.app/
-        retention-days: 30
