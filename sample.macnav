@@ -55,8 +55,9 @@ return warp,click 1,end
 enter warp,click 1,end
 space warp,click 1,end
 escape end
-q quit
+q end
 r reset
+ctrl+shift+q quit
 
 # Click actions at current mouse position
 1 click 1

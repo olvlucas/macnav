@@ -6,6 +6,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     var eventTap: CFMachPort?
     var keyBindingManager: KeyBindingManager?
     var currentQuadrantScreen: NSScreen?
+    var lastWarpTime: Date?
 
     func applicationDidFinishLaunching(_ aNotification: Notification) {
         print("macnav application started!")
@@ -96,23 +97,28 @@ class AppDelegate: NSObject, NSApplicationDelegate {
                         }
                     case .click:
                         print("Clicking")
-                        DispatchQueue.main.async {
+                        let clickDelay = appDelegate.shouldDelayAfterWarp() ? 0.03 : 0.0
+                        DispatchQueue.main.asyncAfter(deadline: .now() + clickDelay) {
                             window.performClickAtSelectedArea()
                             appDelegate.hideQuadrantWindow()
                         }
                     case .click1:
                         print("Click 1 (left click)")
-                        DispatchQueue.main.async {
+                        let clickDelay = appDelegate.shouldDelayAfterWarp() ? 0.1 : 0.0
+                        print("Using click delay: \(clickDelay)")
+                        DispatchQueue.main.asyncAfter(deadline: .now() + clickDelay) {
                             window.performClickAtCurrentMousePosition(button: .left)
                         }
                     case .click2:
                         print("Click 2 (right click)")
-                        DispatchQueue.main.async {
+                        let clickDelay = appDelegate.shouldDelayAfterWarp() ? 0.03 : 0.0
+                        DispatchQueue.main.asyncAfter(deadline: .now() + clickDelay) {
                             window.performClickAtCurrentMousePosition(button: .right)
                         }
                     case .click3:
                         print("Click 3 (middle click)")
-                        DispatchQueue.main.async {
+                        let clickDelay = appDelegate.shouldDelayAfterWarp() ? 0.03 : 0.0
+                        DispatchQueue.main.asyncAfter(deadline: .now() + clickDelay) {
                             window.performClickAtCurrentMousePosition(button: .center)
                         }
                     case .end:
@@ -178,6 +184,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
                     case .warp:
                         print("Warping to selected area")
                         DispatchQueue.main.async {
+                            appDelegate.lastWarpTime = Date()
                             window.warpToSelectedArea()
                         }
                     case .start:
@@ -335,7 +342,14 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         window.orderOut(nil)
         removeEventTap()
         currentQuadrantScreen = nil
+        lastWarpTime = nil
         print("Quadrants hidden")
+    }
+
+    func shouldDelayAfterWarp() -> Bool {
+        guard let lastWarp = lastWarpTime else { return false }
+        let timeSinceWarp = Date().timeIntervalSince(lastWarp)
+        return timeSinceWarp < 0.1
     }
 
     func applicationWillTerminate(_ aNotification: Notification) {
