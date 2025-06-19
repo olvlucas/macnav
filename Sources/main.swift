@@ -380,6 +380,18 @@ class AppDelegate: NSObject, NSApplicationDelegate {
                 self.switchToMonitor(direction: .down)
                 self.executeNextAction(actions, index: nextIndex, window: window)
             }
+        case .scroll_up:
+            print("Scrolling up")
+            DispatchQueue.main.async {
+                window.performScrollUp()
+                self.executeNextAction(actions, index: nextIndex, window: window)
+            }
+        case .scroll_down:
+            print("Scrolling down")
+            DispatchQueue.main.async {
+                window.performScrollDown()
+                self.executeNextAction(actions, index: nextIndex, window: window)
+            }
         case .grid, .grid_nav, .history_back, .record, .playback, .windowzoom, .cursorzoom, .ignore:
             print("Action not implemented yet: \(action.rawValue)")
             executeNextAction(actions, index: nextIndex, window: window)

@@ -240,7 +240,7 @@ class QuadrantWindow: NSWindow {
         }
     }
 
-            func performClickAtCurrentMousePosition(button: CGMouseButton) {
+    func performClickAtCurrentMousePosition(button: CGMouseButton) {
         let currentMouseLocation = NSEvent.mouseLocation
 
         let globalScreenHeight = NSScreen.screens.map { $0.frame.maxY }.max() ?? (NSScreen.main?.frame.height ?? 0)
@@ -282,8 +282,6 @@ class QuadrantWindow: NSWindow {
             print("Failed to create click events")
         }
     }
-
-
 
     func warpToSelectedArea() {
         let selectedRect = quadrantView.getCurrentSelectedRect()
@@ -327,6 +325,52 @@ class QuadrantWindow: NSWindow {
     override func makeKeyAndOrderFront(_ sender: Any?) {
         super.makeKeyAndOrderFront(sender)
         quadrantView.resetToFullScreen()
+    }
+
+    func performScrollUp() {
+        let currentMouseLocation = NSEvent.mouseLocation
+
+        let globalScreenHeight = NSScreen.screens.map { $0.frame.maxY }.max() ?? (NSScreen.main?.frame.height ?? 0)
+        let flippedScreenPoint = CGPoint(
+            x: currentMouseLocation.x,
+            y: globalScreenHeight - currentMouseLocation.y
+        )
+
+        print("Scroll up at mouse location: \(currentMouseLocation)")
+        print("Flipped screen point: \(flippedScreenPoint)")
+
+        let scrollEvent = CGEvent(scrollWheelEvent2Source: nil, units: .pixel, wheelCount: 1, wheel1: 10, wheel2: 0, wheel3: 0)
+
+        if let scroll = scrollEvent {
+            scroll.location = flippedScreenPoint
+            scroll.post(tap: CGEventTapLocation.cghidEventTap)
+            print("Scroll up event posted")
+        } else {
+            print("Failed to create scroll up event")
+        }
+    }
+
+    func performScrollDown() {
+        let currentMouseLocation = NSEvent.mouseLocation
+
+        let globalScreenHeight = NSScreen.screens.map { $0.frame.maxY }.max() ?? (NSScreen.main?.frame.height ?? 0)
+        let flippedScreenPoint = CGPoint(
+            x: currentMouseLocation.x,
+            y: globalScreenHeight - currentMouseLocation.y
+        )
+
+        print("Scroll down at mouse location: \(currentMouseLocation)")
+        print("Flipped screen point: \(flippedScreenPoint)")
+
+        let scrollEvent = CGEvent(scrollWheelEvent2Source: nil, units: .pixel, wheelCount: 1, wheel1: -10, wheel2: 0, wheel3: 0)
+
+        if let scroll = scrollEvent {
+            scroll.location = flippedScreenPoint
+            scroll.post(tap: CGEventTapLocation.cghidEventTap)
+            print("Scroll down event posted")
+        } else {
+            print("Failed to create scroll down event")
+        }
     }
 
     override var canBecomeKey: Bool {
