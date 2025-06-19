@@ -24,6 +24,8 @@
 # monitor-up - switch to monitor above
 # monitor-down - switch to monitor below
 # ignore - ignore the key
+# scroll-up - scroll up at current mouse position
+# scroll-down - scroll down at current mouse position
 
 # Toggle overlay (keynav default: ctrl+semicolon start)
 # You can customize this to your preference:
@@ -100,6 +102,13 @@ ctrl+r reload
 f end
 m warp
 g grid
+
+# Scroll bindings
+up scroll-up
+down scroll-down
+u scroll-up
+ctrl+d scroll-down
+ctrl+u scroll-up
 
 # Custom user bindings examples:
 # ctrl+shift+q quit

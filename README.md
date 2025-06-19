@@ -80,6 +80,13 @@ Each Shift+navigation key moves the selection area without changing size:
 - **Ctrl+Shift+W** or **Ctrl+Shift+K**: Switch to monitor above
 - **Ctrl+Shift+S** or **Ctrl+Shift+J**: Switch to monitor below
 
+#### Scrolling Actions
+- **Up Arrow**: Scroll up at current mouse position
+- **Down Arrow**: Scroll down at current mouse position
+- **U**: Scroll up at current mouse position
+- **Ctrl+U**: Scroll up at current mouse position (vim-style)
+- **Ctrl+D**: Scroll down at current mouse position (vim-style)
+
 _Note: When the overlay is active, navigation keys are intercepted and won't reach other applications._
 
 ## Custom Keybindings
@@ -119,6 +126,8 @@ Multiple actions can be chained together using commas, following keynav's syntax
 - `monitor-up` - Switch to monitor above
 - `monitor-down` - Switch to monitor below
 - `ignore` - Ignore the key
+- `scroll-up` - Scroll up at current mouse position
+- `scroll-down` - Scroll down at current mouse position
 
 ### Supported Modifiers
 
@@ -167,6 +176,13 @@ ctrl+shift+w monitor-up
 ctrl+shift+k monitor-up
 ctrl+shift+s monitor-down
 ctrl+shift+j monitor-down
+
+# Scroll actions
+up scroll-up
+down scroll-down
+u scroll-up
+ctrl+u scroll-up
+ctrl+d scroll-down
 
 # Other actions
 ctrl+c end

@@ -36,6 +36,8 @@ enum KeynavAction: String, CaseIterable {
     case monitor_right = "monitor-right"
     case monitor_up = "monitor-up"
     case monitor_down = "monitor-down"
+    case scroll_up = "scroll-up"
+    case scroll_down = "scroll-down"
 }
 
 struct KeyBinding {
@@ -121,6 +123,13 @@ class KeyBindingManager {
             KeyBinding(keyCode: 38, modifiers: [.control, .shift], action: .monitor_down),  // Ctrl+Shift+j
 
             KeyBinding(keyCode: 41, modifiers: .control, action: .start), // Ctrl+semicolon (default start binding)
+
+            // Scroll actions
+            KeyBinding(keyCode: 126, action: .scroll_up),    // Up arrow
+            KeyBinding(keyCode: 125, action: .scroll_down),  // Down arrow
+            KeyBinding(keyCode: 32, action: .scroll_up),     // u
+            KeyBinding(keyCode: 2, modifiers: .control, action: .scroll_down),   // Ctrl+d (vim-style page down)
+            KeyBinding(keyCode: 32, modifiers: .control, action: .scroll_up),    // Ctrl+u (vim-style page up)
         ]
     }
 
