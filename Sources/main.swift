@@ -197,6 +197,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
     func hideQuadrantWindow() {
         guard let window = quadrantWindow else { return }
+        window.resetClickTracking()
         window.orderOut(nil)
         removeEventTap()
         currentQuadrantScreen = nil

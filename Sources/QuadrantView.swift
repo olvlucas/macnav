@@ -168,6 +168,10 @@ enum MovementDirection {
 
 class QuadrantWindow: NSWindow {
     private var quadrantView: QuadrantView!
+    private var lastClickTime: Date?
+    private var lastClickPosition: CGPoint?
+    private var lastClickButton: CGMouseButton?
+    private var clickCount: Int = 0
 
     init(screen: NSScreen) {
         super.init(contentRect: screen.frame,
@@ -240,7 +244,7 @@ class QuadrantWindow: NSWindow {
         }
     }
 
-    func performClickAtCurrentMousePosition(button: CGMouseButton) {
+        func performClickAtCurrentMousePosition(button: CGMouseButton) {
         let currentMouseLocation = NSEvent.mouseLocation
 
         let globalScreenHeight = NSScreen.screens.map { $0.frame.maxY }.max() ?? (NSScreen.main?.frame.height ?? 0)
@@ -252,6 +256,23 @@ class QuadrantWindow: NSWindow {
         print("Current mouse location: \(currentMouseLocation)")
         print("Global screen height: \(globalScreenHeight)")
         print("Flipped screen point: \(flippedScreenPoint)")
+
+                let maxClickDistance: CGFloat = 6.0
+
+        if let lastPos = lastClickPosition,
+           let lastBtn = lastClickButton,
+           lastBtn == button {
+
+            let distance = sqrt(pow(flippedScreenPoint.x - lastPos.x, 2) + pow(flippedScreenPoint.y - lastPos.y, 2))
+
+            if distance <= maxClickDistance {
+                self.clickCount = self.clickCount + 1
+            } else {
+                self.clickCount = 1
+            }
+        } else {
+            self.clickCount = 1
+        }
 
         let (downEventType, upEventType): (CGEventType, CGEventType)
         switch button {
@@ -273,14 +294,20 @@ class QuadrantWindow: NSWindow {
         let releaseEvent = CGEvent(mouseEventSource: nil, mouseType: upEventType, mouseCursorPosition: flippedScreenPoint, mouseButton: button)
 
         if let click = clickEvent, let release = releaseEvent {
+            click.setIntegerValueField(.mouseEventClickState, value: Int64(self.clickCount))
             click.post(tap: CGEventTapLocation.cghidEventTap)
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.02) {
+                release.setIntegerValueField(.mouseEventClickState, value: Int64(self.clickCount))
                 release.post(tap: CGEventTapLocation.cghidEventTap)
             }
-            print("Click events posted at current mouse position")
+            print("Click events posted (count: \(self.clickCount)) at current mouse position")
         } else {
             print("Failed to create click events")
         }
+
+        lastClickTime = Date()
+        lastClickPosition = flippedScreenPoint
+        lastClickButton = button
     }
 
     func warpToSelectedArea() {
@@ -325,6 +352,14 @@ class QuadrantWindow: NSWindow {
     override func makeKeyAndOrderFront(_ sender: Any?) {
         super.makeKeyAndOrderFront(sender)
         quadrantView.resetToFullScreen()
+        resetClickTracking()
+    }
+
+    func resetClickTracking() {
+        lastClickTime = nil
+        lastClickPosition = nil
+        lastClickButton = nil
+        clickCount = 0
     }
 
     func performScrollUp() {
