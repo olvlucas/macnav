@@ -266,7 +266,7 @@ class QuadrantWindow: NSWindow {
             let distance = sqrt(pow(flippedScreenPoint.x - lastPos.x, 2) + pow(flippedScreenPoint.y - lastPos.y, 2))
 
             if distance <= maxClickDistance {
-                self.clickCount = min(self.clickCount + 1, 3)
+                self.clickCount = self.clickCount + 1
             } else {
                 self.clickCount = 1
             }
