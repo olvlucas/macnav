@@ -2,6 +2,10 @@
 
 A Keynav-like application for macOS that allows keyboard-based navigation and clicking anywhere on the screen.
 
+<div align="center">
+  <img src="https://github.com/user-attachments/assets/50b5f6fe-9e97-4232-8c01-1eded44ee3cb" alt="macnav demo">
+</div>
+
 This project replicates the functionality of the original Keynav tool, enabling you to quickly navigate to any point on your screen using only keyboard shortcuts. The screen is progressively divided into smaller areas until you reach your target location.
 
 ## Features
