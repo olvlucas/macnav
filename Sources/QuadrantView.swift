@@ -300,17 +300,6 @@ class QuadrantWindow: NSWindow {
         quadrantView.setupCursorZoom(centerX: relativeX, centerY: relativeY, width: width, height: height)
     }
 
-    func setupCursorZoomFromCurrentSelection(width: CGFloat, height: CGFloat) {
-        let currentSelectedRect = quadrantView.getCurrentSelectedRect()
-        let centerX = currentSelectedRect.midX
-        let centerY = currentSelectedRect.midY
-
-        print("Current selection center: \(centerX), \(centerY)")
-        print("Current selection rect: \(currentSelectedRect)")
-
-        quadrantView.setupCursorZoom(centerX: centerX, centerY: centerY, width: width, height: height)
-    }
-
     func performClickAtSelectedArea() {
         let selectedRect = quadrantView.getCurrentSelectedRect()
         let centerPoint = NSPoint(x: selectedRect.midX, y: selectedRect.midY)

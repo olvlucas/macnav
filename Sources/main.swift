@@ -218,6 +218,8 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     }
 
     func performCursorZoom(parameters: [String] = []) {
+        let mouseLocation = NSEvent.mouseLocation
+
         let width: CGFloat
         let height: CGFloat
 
@@ -236,7 +238,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             return
         }
 
-        window.setupCursorZoomFromCurrentSelection(width: width, height: height)
+        window.setupCursorZoom(centerX: mouseLocation.x, centerY: mouseLocation.y, width: width, height: height)
     }
 
     func executeActionsSequentially(_ actions: [ParameterizedAction], window: QuadrantWindow) {
