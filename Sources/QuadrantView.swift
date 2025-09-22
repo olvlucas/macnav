@@ -19,6 +19,8 @@ struct QuadrantArea {
 
 class QuadrantView: NSView {
     private var currentArea: NSRect = NSRect.zero
+    private var cursorZoomMode: Bool = false
+    private var cursorZoomArea: NSRect = NSRect.zero
 
     override func awakeFromNib() {
         super.awakeFromNib()
@@ -27,53 +29,115 @@ class QuadrantView: NSView {
 
     func resetToFullScreen() {
         currentArea = self.bounds
-        needsDisplay = true
+        cursorZoomMode = false
+        cursorZoomArea = NSRect.zero
+        setNeedsDisplay(self.bounds)
+    }
+
+    func setupCursorZoom(centerX: CGFloat, centerY: CGFloat, width: CGFloat, height: CGFloat) {
+        cursorZoomMode = true
+
+        let halfWidth = width / 2
+        let halfHeight = height / 2
+
+        var zoomX = centerX - halfWidth
+        var zoomY = centerY - halfHeight
+
+        zoomX = max(0, min(zoomX, self.bounds.width - width))
+        zoomY = max(0, min(zoomY, self.bounds.height - height))
+
+        cursorZoomArea = NSRect(x: zoomX, y: zoomY, width: width, height: height)
+        currentArea = cursorZoomArea
+
+        print("QuadrantView bounds: \(self.bounds)")
+        print("Cursor zoom area: \(cursorZoomArea)")
+
+        setNeedsDisplay(self.bounds)
     }
 
     func moveSelection(direction: MovementDirection) {
-        switch direction {
-        case .up:
-            let newHeight = currentArea.height / 2
-            currentArea = NSRect(
-                x: currentArea.minX,
-                y: currentArea.minY + newHeight,
-                width: currentArea.width,
-                height: newHeight
-            )
-        case .down:
-            let newHeight = currentArea.height / 2
-            currentArea = NSRect(
-                x: currentArea.minX,
-                y: currentArea.minY,
-                width: currentArea.width,
-                height: newHeight
-            )
-        case .left:
-            let newWidth = currentArea.width / 2
-            currentArea = NSRect(
-                x: currentArea.minX,
-                y: currentArea.minY,
-                width: newWidth,
-                height: currentArea.height
-            )
-        case .right:
-            let newWidth = currentArea.width / 2
-            currentArea = NSRect(
-                x: currentArea.minX + newWidth,
-                y: currentArea.minY,
-                width: newWidth,
-                height: currentArea.height
-            )
+        if cursorZoomMode {
+            let boundingArea = cursorZoomArea
+            switch direction {
+            case .up:
+                let newHeight = currentArea.height / 2
+                currentArea = NSRect(
+                    x: currentArea.minX,
+                    y: currentArea.minY + newHeight,
+                    width: currentArea.width,
+                    height: newHeight
+                )
+            case .down:
+                let newHeight = currentArea.height / 2
+                currentArea = NSRect(
+                    x: currentArea.minX,
+                    y: currentArea.minY,
+                    width: currentArea.width,
+                    height: newHeight
+                )
+            case .left:
+                let newWidth = currentArea.width / 2
+                currentArea = NSRect(
+                    x: currentArea.minX,
+                    y: currentArea.minY,
+                    width: newWidth,
+                    height: currentArea.height
+                )
+            case .right:
+                let newWidth = currentArea.width / 2
+                currentArea = NSRect(
+                    x: currentArea.minX + newWidth,
+                    y: currentArea.minY,
+                    width: newWidth,
+                    height: currentArea.height
+                )
+            }
+        } else {
+            switch direction {
+            case .up:
+                let newHeight = currentArea.height / 2
+                currentArea = NSRect(
+                    x: currentArea.minX,
+                    y: currentArea.minY + newHeight,
+                    width: currentArea.width,
+                    height: newHeight
+                )
+            case .down:
+                let newHeight = currentArea.height / 2
+                currentArea = NSRect(
+                    x: currentArea.minX,
+                    y: currentArea.minY,
+                    width: currentArea.width,
+                    height: newHeight
+                )
+            case .left:
+                let newWidth = currentArea.width / 2
+                currentArea = NSRect(
+                    x: currentArea.minX,
+                    y: currentArea.minY,
+                    width: newWidth,
+                    height: currentArea.height
+                )
+            case .right:
+                let newWidth = currentArea.width / 2
+                currentArea = NSRect(
+                    x: currentArea.minX + newWidth,
+                    y: currentArea.minY,
+                    width: newWidth,
+                    height: currentArea.height
+                )
+            }
         }
-        needsDisplay = true
+        setNeedsDisplay(self.bounds)
     }
 
     func moveSelectionArea(direction: MovementDirection) {
         let moveDistance = min(currentArea.width * 0.1, currentArea.height * 0.1)
+        let bounds = cursorZoomMode ? cursorZoomArea : self.bounds
 
         switch direction {
         case .up:
-            let newY = min(currentArea.minY + moveDistance, self.bounds.maxY - currentArea.height)
+            let newY = min(currentArea.minY + moveDistance, bounds.maxY - currentArea.height)
             currentArea = NSRect(
                 x: currentArea.minX,
                 y: newY,
@@ -81,7 +145,7 @@ class QuadrantView: NSView {
                 height: currentArea.height
             )
         case .down:
-            let newY = max(currentArea.minY - moveDistance, self.bounds.minY)
+            let newY = max(currentArea.minY - moveDistance, bounds.minY)
             currentArea = NSRect(
                 x: currentArea.minX,
                 y: newY,
@@ -89,7 +153,7 @@ class QuadrantView: NSView {
                 height: currentArea.height
             )
         case .left:
-            let newX = max(currentArea.minX - moveDistance, self.bounds.minX)
+            let newX = max(currentArea.minX - moveDistance, bounds.minX)
             currentArea = NSRect(
                 x: newX,
                 y: currentArea.minY,
@@ -97,7 +161,7 @@ class QuadrantView: NSView {
                 height: currentArea.height
             )
         case .right:
-            let newX = min(currentArea.minX + moveDistance, self.bounds.maxX - currentArea.width)
+            let newX = min(currentArea.minX + moveDistance, bounds.maxX - currentArea.width)
             currentArea = NSRect(
                 x: newX,
                 y: currentArea.minY,
@@ -105,7 +169,7 @@ class QuadrantView: NSView {
                 height: currentArea.height
             )
         }
-        needsDisplay = true
+        setNeedsDisplay(self.bounds)
     }
 
     func getCurrentSelectedRect() -> NSRect {
@@ -117,6 +181,8 @@ class QuadrantView: NSView {
 
         guard let context = NSGraphicsContext.current?.cgContext else { return }
 
+        context.clear(self.bounds)
+
         let dimmedColor = NSColor(red: 0.0, green: 0.0, blue: 0.0, alpha: 0.4).cgColor
         let lineColor = NSColor(red: 1.0, green: 0.0, blue: 0.0, alpha: 0.9).cgColor
         let centerColor = NSColor(red: 1.0, green: 1.0, blue: 0.0, alpha: 0.9).cgColor
@@ -124,18 +190,31 @@ class QuadrantView: NSView {
         context.setFillColor(dimmedColor)
         context.fill(self.bounds)
 
+        if cursorZoomMode {
+            let zoomBorderColor = NSColor(red: 0.0, green: 1.0, blue: 1.0, alpha: 0.8).cgColor
+            context.setStrokeColor(zoomBorderColor)
+            context.setLineWidth(4)
+            context.stroke(cursorZoomArea)
+
+            let zoomFillColor = NSColor(red: 0.0, green: 0.0, blue: 0.0, alpha: 0.1).cgColor
+            context.setFillColor(zoomFillColor)
+            context.fill(cursorZoomArea)
+        }
+
         context.setStrokeColor(lineColor)
         context.setLineWidth(2)
 
         let centerX = currentArea.midX
         let centerY = currentArea.midY
 
-        context.move(to: CGPoint(x: centerX, y: 0))
-        context.addLine(to: CGPoint(x: centerX, y: self.bounds.height))
+        let drawBounds = cursorZoomMode ? cursorZoomArea : self.bounds
+
+        context.move(to: CGPoint(x: centerX, y: drawBounds.minY))
+        context.addLine(to: CGPoint(x: centerX, y: drawBounds.maxY))
         context.strokePath()
 
-        context.move(to: CGPoint(x: 0, y: centerY))
-        context.addLine(to: CGPoint(x: self.bounds.width, y: centerY))
+        context.move(to: CGPoint(x: drawBounds.minX, y: centerY))
+        context.addLine(to: CGPoint(x: drawBounds.maxX, y: centerY))
         context.strokePath()
 
         context.setStrokeColor(lineColor)
@@ -199,6 +278,37 @@ class QuadrantWindow: NSWindow {
 
     func resetToFullScreen() {
         quadrantView.resetToFullScreen()
+    }
+
+    func setupCursorZoom(centerX: CGFloat, centerY: CGFloat, width: CGFloat, height: CGFloat) {
+        guard let screen = self.screen else { return }
+
+        let windowFrame = self.frame
+        let screenFrame = screen.frame
+
+        let globalScreenHeight = NSScreen.screens.map { $0.frame.maxY }.max() ?? screenFrame.height
+        let flippedY = globalScreenHeight - centerY
+
+        let relativeX = centerX - windowFrame.minX
+        let relativeY = windowFrame.maxY - flippedY
+
+        print("Mouse location: \(centerX), \(centerY)")
+        print("Window frame: \(windowFrame)")
+        print("Screen frame: \(screenFrame)")
+        print("Relative position: \(relativeX), \(relativeY)")
+
+        quadrantView.setupCursorZoom(centerX: relativeX, centerY: relativeY, width: width, height: height)
+    }
+
+    func setupCursorZoomFromCurrentSelection(width: CGFloat, height: CGFloat) {
+        let currentSelectedRect = quadrantView.getCurrentSelectedRect()
+        let centerX = currentSelectedRect.midX
+        let centerY = currentSelectedRect.midY
+
+        print("Current selection center: \(centerX), \(centerY)")
+        print("Current selection rect: \(currentSelectedRect)")
+
+        quadrantView.setupCursorZoom(centerX: centerX, centerY: centerY, width: width, height: height)
     }
 
     func performClickAtSelectedArea() {

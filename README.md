@@ -17,6 +17,7 @@ This project replicates the functionality of the original Keynav tool, enabling 
 - ✅ Global keyboard shortcuts that work across all applications
 - ✅ Event interception to prevent key conflicts with other apps
 - ✅ Visual feedback with center point highlighting
+- ✅ Cursor zoom functionality for precise targeting (keynav-style)
 - ✅ Custom keybinding configuration support
 - ✅ Multi-monitor support with intelligent screen detection
 
@@ -24,8 +25,9 @@ This project replicates the functionality of the original Keynav tool, enabling 
 
 1. **Activate**: Press the global shortcut to show the navigation overlay
 2. **Navigate**: Use WASD or HJKL keys to progressively narrow down your target area, or Shift+WASD/HJKL to move the selection
-3. **Click**: Press Enter to click at the center of the selected area
-4. **Done**: The overlay automatically hides after clicking
+3. **Zoom** (optional): Press C to create a zoom overlay around your current selection for more precise targeting
+4. **Click**: Press Enter to click at the center of the selected area
+5. **Done**: The overlay automatically hides after clicking
 
 Each basic navigation key splits the current area in half:
 
@@ -91,6 +93,10 @@ Each Shift+navigation key moves the selection area without changing size:
 - **Ctrl+U**: Scroll up at current mouse position (vim-style)
 - **Ctrl+D**: Scroll down at current mouse position (vim-style)
 
+#### Cursor Zoom
+- **C** or **Period**: Create a zoom overlay centered around current selection (200x200 default)
+- Custom zoom sizes can be configured in `.macnav` file (e.g., `c cursorzoom 300 250`)
+
 _Note: When the overlay is active, navigation keys are intercepted and won't reach other applications._
 
 ## Custom Keybindings
@@ -132,6 +138,7 @@ Multiple actions can be chained together using commas, following keynav's syntax
 - `ignore` - Ignore the key
 - `scroll-up` - Scroll up at current mouse position
 - `scroll-down` - Scroll down at current mouse position
+- `cursorzoom` - Create a zoom overlay centered around current selection with specified width and height
 
 ### Supported Modifiers
 
@@ -187,6 +194,10 @@ down scroll-down
 u scroll-up
 ctrl+u scroll-up
 ctrl+d scroll-down
+
+# Cursor zoom - create zoom overlay around current selection
+c cursorzoom 200 200
+period cursorzoom 300 250
 
 # Other actions
 ctrl+c end

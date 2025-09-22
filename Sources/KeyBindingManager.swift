@@ -40,21 +40,43 @@ enum KeynavAction: String, CaseIterable {
     case scroll_down = "scroll-down"
 }
 
+struct ParameterizedAction {
+    let action: KeynavAction
+    let parameters: [String]
+
+    init(_ action: KeynavAction, parameters: [String] = []) {
+        self.action = action
+        self.parameters = parameters
+    }
+}
+
 struct KeyBinding {
     let keyCode: UInt16
     let modifiers: NSEvent.ModifierFlags
-    let actions: [KeynavAction]
+    let actions: [ParameterizedAction]
 
-    init(keyCode: UInt16, modifiers: NSEvent.ModifierFlags = [], actions: [KeynavAction]) {
+    init(keyCode: UInt16, modifiers: NSEvent.ModifierFlags = [], actions: [ParameterizedAction]) {
         self.keyCode = keyCode
         self.modifiers = modifiers
         self.actions = actions
     }
 
-    init(keyCode: UInt16, modifiers: NSEvent.ModifierFlags = [], action: KeynavAction) {
+    init(keyCode: UInt16, modifiers: NSEvent.ModifierFlags = [], action: ParameterizedAction) {
         self.keyCode = keyCode
         self.modifiers = modifiers
         self.actions = [action]
+    }
+
+    init(keyCode: UInt16, modifiers: NSEvent.ModifierFlags = [], simpleAction: KeynavAction) {
+        self.keyCode = keyCode
+        self.modifiers = modifiers
+        self.actions = [ParameterizedAction(simpleAction)]
+    }
+
+    init(keyCode: UInt16, modifiers: NSEvent.ModifierFlags = [], simpleActions: [KeynavAction]) {
+        self.keyCode = keyCode
+        self.modifiers = modifiers
+        self.actions = simpleActions.map { ParameterizedAction($0) }
     }
 }
 
@@ -68,68 +90,68 @@ class KeyBindingManager {
 
     private func loadDefaultBindings() {
         bindings = [
-            KeyBinding(keyCode: 13, action: .up),       // w
-            KeyBinding(keyCode: 4, action: .left),      // h (vim left)
-            KeyBinding(keyCode: 0, action: .left),      // a
-            KeyBinding(keyCode: 38, action: .down),     // j (vim down)
-            KeyBinding(keyCode: 1, action: .down),      // s
-            KeyBinding(keyCode: 40, action: .up),       // k (vim up)
-            KeyBinding(keyCode: 2, action: .right),     // d
-            KeyBinding(keyCode: 37, action: .right),    // l (vim right)
-            KeyBinding(keyCode: 36, actions: [.warp, .click1, .end]),    // Return
-            KeyBinding(keyCode: 52, actions: [.warp, .click1, .end]),    // Enter
-            KeyBinding(keyCode: 53, action: .end),      // Escape
-            KeyBinding(keyCode: 15, action: .reset),    // r
-            KeyBinding(keyCode: 49, actions: [.warp, .click1, .end]),    // Space
-            KeyBinding(keyCode: 3, action: .end),       // f (alternative end)
-            KeyBinding(keyCode: 12, action: .quit),     // q
-            KeyBinding(keyCode: 18, action: .click1),   // 1
-            KeyBinding(keyCode: 19, action: .click2),   // 2
-            KeyBinding(keyCode: 20, action: .click3),   // 3
+            KeyBinding(keyCode: 13, simpleAction: .up),       // w
+            KeyBinding(keyCode: 4, simpleAction: .left),      // h (vim left)
+            KeyBinding(keyCode: 0, simpleAction: .left),      // a
+            KeyBinding(keyCode: 38, simpleAction: .down),     // j (vim down)
+            KeyBinding(keyCode: 1, simpleAction: .down),      // s
+            KeyBinding(keyCode: 40, simpleAction: .up),       // k (vim up)
+            KeyBinding(keyCode: 2, simpleAction: .right),     // d
+            KeyBinding(keyCode: 37, simpleAction: .right),    // l (vim right)
+            KeyBinding(keyCode: 36, simpleActions: [.warp, .click1, .end]),    // Return
+            KeyBinding(keyCode: 52, simpleActions: [.warp, .click1, .end]),    // Enter
+            KeyBinding(keyCode: 53, simpleAction: .end),      // Escape
+            KeyBinding(keyCode: 15, simpleAction: .reset),    // r
+            KeyBinding(keyCode: 49, simpleActions: [.warp, .click1, .end]),    // Space
+            KeyBinding(keyCode: 3, simpleAction: .end),       // f (alternative end)
+            KeyBinding(keyCode: 12, simpleAction: .quit),     // q
+            KeyBinding(keyCode: 18, simpleAction: .click1),   // 1
+            KeyBinding(keyCode: 19, simpleAction: .click2),   // 2
+            KeyBinding(keyCode: 20, simpleAction: .click3),   // 3
 
-            KeyBinding(keyCode: 13, modifiers: .shift, action: .move_up),     // Shift+w
-            KeyBinding(keyCode: 40, modifiers: .shift, action: .move_up),     // Shift+k
-            KeyBinding(keyCode: 0, modifiers: .shift, action: .move_left),    // Shift+a
-            KeyBinding(keyCode: 4, modifiers: .shift, action: .move_left),    // Shift+h
-            KeyBinding(keyCode: 1, modifiers: .shift, action: .move_down),    // Shift+s
-            KeyBinding(keyCode: 38, modifiers: .shift, action: .move_down),   // Shift+j
-            KeyBinding(keyCode: 2, modifiers: .shift, action: .move_right),   // Shift+d
-            KeyBinding(keyCode: 37, modifiers: .shift, action: .move_right),  // Shift+l
+            KeyBinding(keyCode: 13, modifiers: .shift, simpleAction: .move_up),     // Shift+w
+            KeyBinding(keyCode: 40, modifiers: .shift, simpleAction: .move_up),     // Shift+k
+            KeyBinding(keyCode: 0, modifiers: .shift, simpleAction: .move_left),    // Shift+a
+            KeyBinding(keyCode: 4, modifiers: .shift, simpleAction: .move_left),    // Shift+h
+            KeyBinding(keyCode: 1, modifiers: .shift, simpleAction: .move_down),    // Shift+s
+            KeyBinding(keyCode: 38, modifiers: .shift, simpleAction: .move_down),   // Shift+j
+            KeyBinding(keyCode: 2, modifiers: .shift, simpleAction: .move_right),   // Shift+d
+            KeyBinding(keyCode: 37, modifiers: .shift, simpleAction: .move_right),  // Shift+l
 
-            KeyBinding(keyCode: 13, modifiers: .control, action: .cut_up),    // Ctrl+w
-            KeyBinding(keyCode: 40, modifiers: .control, action: .cut_up),    // Ctrl+k
-            KeyBinding(keyCode: 0, modifiers: .control, action: .cut_left),   // Ctrl+a
-            KeyBinding(keyCode: 4, modifiers: .control, action: .cut_left),   // Ctrl+h
-            KeyBinding(keyCode: 1, modifiers: .control, action: .cut_down),   // Ctrl+s
-            KeyBinding(keyCode: 38, modifiers: .control, action: .cut_down),  // Ctrl+j
-            KeyBinding(keyCode: 2, modifiers: .control, action: .cut_right),  // Ctrl+d
-            KeyBinding(keyCode: 37, modifiers: .control, action: .cut_right), // Ctrl+l
+            KeyBinding(keyCode: 13, modifiers: .control, simpleAction: .cut_up),    // Ctrl+w
+            KeyBinding(keyCode: 40, modifiers: .control, simpleAction: .cut_up),    // Ctrl+k
+            KeyBinding(keyCode: 0, modifiers: .control, simpleAction: .cut_left),   // Ctrl+a
+            KeyBinding(keyCode: 4, modifiers: .control, simpleAction: .cut_left),   // Ctrl+h
+            KeyBinding(keyCode: 1, modifiers: .control, simpleAction: .cut_down),   // Ctrl+s
+            KeyBinding(keyCode: 38, modifiers: .control, simpleAction: .cut_down),  // Ctrl+j
+            KeyBinding(keyCode: 2, modifiers: .control, simpleAction: .cut_right),  // Ctrl+d
+            KeyBinding(keyCode: 37, modifiers: .control, simpleAction: .cut_right), // Ctrl+l
 
-            KeyBinding(keyCode: 46, action: .warp),     // m
-            KeyBinding(keyCode: 5, action: .grid),      // g
-            KeyBinding(keyCode: 35, action: .history_back),  // p
-            KeyBinding(keyCode: 14, action: .record),   // e
-            KeyBinding(keyCode: 43, action: .windowzoom), // comma
-            KeyBinding(keyCode: 47, action: .cursorzoom), // period
-            KeyBinding(keyCode: 15, modifiers: [.control, .shift], action: .reload), // Ctrl+Shift+r
+            KeyBinding(keyCode: 46, simpleAction: .warp),     // m
+            KeyBinding(keyCode: 5, simpleAction: .grid),      // g
+            KeyBinding(keyCode: 35, simpleAction: .history_back),  // p
+            KeyBinding(keyCode: 14, simpleAction: .record),   // e
+            KeyBinding(keyCode: 43, simpleAction: .windowzoom), // comma
+            KeyBinding(keyCode: 47, simpleAction: .cursorzoom), // period
+            KeyBinding(keyCode: 15, modifiers: [.control, .shift], simpleAction: .reload), // Ctrl+Shift+r
 
-            KeyBinding(keyCode: 0, modifiers: [.control, .shift], action: .monitor_left),   // Ctrl+Shift+a
-            KeyBinding(keyCode: 4, modifiers: [.control, .shift], action: .monitor_left),   // Ctrl+Shift+h
-            KeyBinding(keyCode: 2, modifiers: [.control, .shift], action: .monitor_right),  // Ctrl+Shift+d
-            KeyBinding(keyCode: 37, modifiers: [.control, .shift], action: .monitor_right), // Ctrl+Shift+l
-            KeyBinding(keyCode: 13, modifiers: [.control, .shift], action: .monitor_up),    // Ctrl+Shift+w
-            KeyBinding(keyCode: 40, modifiers: [.control, .shift], action: .monitor_up),    // Ctrl+Shift+k
-            KeyBinding(keyCode: 1, modifiers: [.control, .shift], action: .monitor_down),   // Ctrl+Shift+s
-            KeyBinding(keyCode: 38, modifiers: [.control, .shift], action: .monitor_down),  // Ctrl+Shift+j
+            KeyBinding(keyCode: 0, modifiers: [.control, .shift], simpleAction: .monitor_left),   // Ctrl+Shift+a
+            KeyBinding(keyCode: 4, modifiers: [.control, .shift], simpleAction: .monitor_left),   // Ctrl+Shift+h
+            KeyBinding(keyCode: 2, modifiers: [.control, .shift], simpleAction: .monitor_right),  // Ctrl+Shift+d
+            KeyBinding(keyCode: 37, modifiers: [.control, .shift], simpleAction: .monitor_right), // Ctrl+Shift+l
+            KeyBinding(keyCode: 13, modifiers: [.control, .shift], simpleAction: .monitor_up),    // Ctrl+Shift+w
+            KeyBinding(keyCode: 40, modifiers: [.control, .shift], simpleAction: .monitor_up),    // Ctrl+Shift+k
+            KeyBinding(keyCode: 1, modifiers: [.control, .shift], simpleAction: .monitor_down),   // Ctrl+Shift+s
+            KeyBinding(keyCode: 38, modifiers: [.control, .shift], simpleAction: .monitor_down),  // Ctrl+Shift+j
 
-            KeyBinding(keyCode: 41, modifiers: .control, action: .start), // Ctrl+semicolon (default start binding)
+            KeyBinding(keyCode: 41, modifiers: .control, simpleAction: .start), // Ctrl+semicolon (default start binding)
 
             // Scroll actions
-            KeyBinding(keyCode: 126, action: .scroll_up),    // Up arrow
-            KeyBinding(keyCode: 125, action: .scroll_down),  // Down arrow
-            KeyBinding(keyCode: 32, action: .scroll_up),     // u
-            KeyBinding(keyCode: 2, modifiers: .control, action: .scroll_down),   // Ctrl+d (vim-style page down)
-            KeyBinding(keyCode: 32, modifiers: .control, action: .scroll_up),    // Ctrl+u (vim-style page up)
+            KeyBinding(keyCode: 126, simpleAction: .scroll_up),    // Up arrow
+            KeyBinding(keyCode: 125, simpleAction: .scroll_down),  // Down arrow
+            KeyBinding(keyCode: 32, simpleAction: .scroll_up),     // u
+            KeyBinding(keyCode: 2, modifiers: .control, simpleAction: .scroll_down),   // Ctrl+d (vim-style page down)
+            KeyBinding(keyCode: 32, modifiers: .control, simpleAction: .scroll_up),    // Ctrl+u (vim-style page up)
         ]
     }
 
@@ -176,13 +198,22 @@ class KeyBindingManager {
         let actionsString = parts[1..<parts.count].joined(separator: " ")
 
         let actionStrings = actionsString.components(separatedBy: ",").map { $0.trimmingCharacters(in: .whitespaces) }
-        var actions: [KeynavAction] = []
+        var actions: [ParameterizedAction] = []
 
         for actionString in actionStrings {
+            let actionParts = actionString.components(separatedBy: .whitespaces).filter { !$0.isEmpty }
+
+            guard !actionParts.isEmpty else { continue }
+
+            let actionName = actionParts[0]
+            let parameters = Array(actionParts[1...])
+
             if let action = KeynavAction(rawValue: actionString) {
-                actions.append(action)
+                actions.append(ParameterizedAction(action))
+            } else if let action = KeynavAction(rawValue: actionName) {
+                actions.append(ParameterizedAction(action, parameters: parameters))
             } else {
-                print("Unknown action: \(actionString)")
+                print("Unknown action: \(actionName)")
                 return
             }
         }
@@ -192,7 +223,7 @@ class KeyBindingManager {
         }
     }
 
-    private func parseKeyString(_ keyString: String, actions: [KeynavAction]) -> KeyBinding? {
+    private func parseKeyString(_ keyString: String, actions: [ParameterizedAction]) -> KeyBinding? {
         var modifiers: NSEvent.ModifierFlags = []
         var keyPart = keyString
 
@@ -251,11 +282,17 @@ class KeyBindingManager {
     private func addBinding(_ binding: KeyBinding) {
         bindings.removeAll { $0.keyCode == binding.keyCode && $0.modifiers == binding.modifiers }
         bindings.append(binding)
-        let actionsString = binding.actions.map { $0.rawValue }.joined(separator: ",")
+        let actionsString = binding.actions.map { action in
+            if action.parameters.isEmpty {
+                return action.action.rawValue
+            } else {
+                return "\(action.action.rawValue) \(action.parameters.joined(separator: " "))"
+            }
+        }.joined(separator: ",")
         print("Added binding: \(binding.keyCode) (\(binding.modifiers.rawValue)) -> \(actionsString)")
     }
 
-    func getActions(for keyCode: UInt16, modifiers: NSEvent.ModifierFlags = []) -> [KeynavAction]? {
+    func getActions(for keyCode: UInt16, modifiers: NSEvent.ModifierFlags = []) -> [ParameterizedAction]? {
         return bindings.first { $0.keyCode == keyCode && $0.modifiers == modifiers }?.actions
     }
 
@@ -264,7 +301,9 @@ class KeyBindingManager {
     }
 
     func getStartBindings() -> [KeyBinding] {
-        return bindings.filter { $0.actions.contains(.start) }
+        return bindings.filter { binding in
+            binding.actions.contains { $0.action == .start }
+        }
     }
 
     func reloadBindings() {

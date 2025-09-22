@@ -26,6 +26,7 @@
 # ignore - ignore the key
 # scroll-up - scroll up at current mouse position
 # scroll-down - scroll down at current mouse position
+# cursorzoom - create a zoom overlay centered around cursor with specified width and height
 
 # Toggle overlay (keynav default: ctrl+semicolon start)
 # You can customize this to your preference:
@@ -102,6 +103,11 @@ ctrl+r reload
 f end
 m warp
 g grid
+
+# Cursor zoom - create a zoom overlay centered around cursor
+# Format: c cursorzoom <width> <height>
+c cursorzoom 200 200
+period cursorzoom 300 250
 
 # Scroll bindings
 up scroll-up
