@@ -70,7 +70,13 @@ class AppDelegate: NSObject, NSApplicationDelegate {
                     return Unmanaged.passUnretained(event)
                 }
 
-                let actionsString = actions.map { $0.rawValue }.joined(separator: ",")
+                let actionsString = actions.map { action in
+                    if action.parameters.isEmpty {
+                        return action.action.rawValue
+                    } else {
+                        return "\(action.action.rawValue) \(action.parameters.joined(separator: " "))"
+                    }
+                }.joined(separator: ",")
                 print("Actions: \(actionsString)")
 
                 appDelegate.executeActionsSequentially(actions, window: window)
@@ -211,14 +217,38 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         return timeSinceWarp < 0.1
     }
 
-    func executeActionsSequentially(_ actions: [KeynavAction], window: QuadrantWindow) {
+    func performCursorZoom(parameters: [String] = []) {
+        let width: CGFloat
+        let height: CGFloat
+
+        if parameters.count >= 2,
+           let widthParam = Double(parameters[0]),
+           let heightParam = Double(parameters[1]) {
+            width = CGFloat(widthParam)
+            height = CGFloat(heightParam)
+        } else {
+            width = 200
+            height = 200
+        }
+
+        guard let window = quadrantWindow else {
+            print("No quadrant window available for cursor zoom")
+            return
+        }
+
+        window.setupCursorZoomFromCurrentSelection(width: width, height: height)
+    }
+
+    func executeActionsSequentially(_ actions: [ParameterizedAction], window: QuadrantWindow) {
         executeNextAction(actions, index: 0, window: window)
     }
 
-    private func executeNextAction(_ actions: [KeynavAction], index: Int, window: QuadrantWindow) {
+    private func executeNextAction(_ actions: [ParameterizedAction], index: Int, window: QuadrantWindow) {
         guard index < actions.count else { return }
 
-        let action = actions[index]
+        let paramAction = actions[index]
+        let action = paramAction.action
+        let parameters = paramAction.parameters
         let nextIndex = index + 1
 
         switch action {
@@ -393,7 +423,13 @@ class AppDelegate: NSObject, NSApplicationDelegate {
                 window.performScrollDown()
                 self.executeNextAction(actions, index: nextIndex, window: window)
             }
-        case .grid, .grid_nav, .history_back, .record, .playback, .windowzoom, .cursorzoom, .ignore:
+        case .cursorzoom:
+            print("Cursor zoom with parameters: \(parameters)")
+            DispatchQueue.main.async {
+                self.performCursorZoom(parameters: parameters)
+                self.executeNextAction(actions, index: nextIndex, window: window)
+            }
+        case .grid, .grid_nav, .history_back, .record, .playback, .windowzoom, .ignore:
             print("Action not implemented yet: \(action.rawValue)")
             executeNextAction(actions, index: nextIndex, window: window)
         }
