@@ -14,11 +14,6 @@ jobs:
     steps:
     - uses: actions/checkout@v4
 
-    - name: Setup Swift
-      uses: swift-actions/setup-swift@v1
-      with:
-        swift-version: "5.9"
-
     - name: Cache Swift packages
       uses: actions/cache@v3
       with:
@@ -57,11 +52,6 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
-
-    - name: Setup Swift
-      uses: swift-actions/setup-swift@v1
-      with:
-        swift-version: "5.9"
 
     - name: Build universal binary
       run: |
