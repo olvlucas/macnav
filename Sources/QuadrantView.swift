@@ -286,7 +286,7 @@ class QuadrantWindow: NSWindow {
         let windowFrame = self.frame
         let screenFrame = screen.frame
 
-        let globalScreenHeight = NSScreen.screens.map { $0.frame.maxY }.max() ?? screenFrame.height
+        let globalScreenHeight = NSScreen.screens.first?.frame.height ?? screenFrame.height
         let flippedY = globalScreenHeight - centerY
 
         let relativeX = centerX - windowFrame.minX
@@ -329,7 +329,7 @@ class QuadrantWindow: NSWindow {
             y: windowOrigin.y + centerPoint.y
         )
 
-        let globalScreenHeight = NSScreen.screens.map { $0.frame.maxY }.max() ?? currentScreen.frame.height
+        let globalScreenHeight = NSScreen.screens.first?.frame.height ?? currentScreen.frame.height
         let flippedScreenPoint = CGPoint(
             x: screenPoint.x,
             y: globalScreenHeight - screenPoint.y
@@ -357,7 +357,7 @@ class QuadrantWindow: NSWindow {
         func performClickAtCurrentMousePosition(button: CGMouseButton) {
         let currentMouseLocation = NSEvent.mouseLocation
 
-        let globalScreenHeight = NSScreen.screens.map { $0.frame.maxY }.max() ?? (NSScreen.main?.frame.height ?? 0)
+        let globalScreenHeight = NSScreen.screens.first?.frame.height ?? 0
         let flippedScreenPoint = CGPoint(
             x: currentMouseLocation.x,
             y: globalScreenHeight - currentMouseLocation.y
@@ -438,7 +438,7 @@ class QuadrantWindow: NSWindow {
             y: windowOrigin.y + centerPoint.y
         )
 
-        let globalScreenHeight = NSScreen.screens.map { $0.frame.maxY }.max() ?? currentScreen.frame.height
+        let globalScreenHeight = NSScreen.screens.first?.frame.height ?? currentScreen.frame.height
         let flippedScreenPoint = CGPoint(
             x: screenPoint.x,
             y: globalScreenHeight - screenPoint.y
@@ -475,7 +475,7 @@ class QuadrantWindow: NSWindow {
     func performScrollUp() {
         let currentMouseLocation = NSEvent.mouseLocation
 
-        let globalScreenHeight = NSScreen.screens.map { $0.frame.maxY }.max() ?? (NSScreen.main?.frame.height ?? 0)
+        let globalScreenHeight = NSScreen.screens.first?.frame.height ?? 0
         let flippedScreenPoint = CGPoint(
             x: currentMouseLocation.x,
             y: globalScreenHeight - currentMouseLocation.y
@@ -498,7 +498,7 @@ class QuadrantWindow: NSWindow {
     func performScrollDown() {
         let currentMouseLocation = NSEvent.mouseLocation
 
-        let globalScreenHeight = NSScreen.screens.map { $0.frame.maxY }.max() ?? (NSScreen.main?.frame.height ?? 0)
+        let globalScreenHeight = NSScreen.screens.first?.frame.height ?? 0
         let flippedScreenPoint = CGPoint(
             x: currentMouseLocation.x,
             y: globalScreenHeight - currentMouseLocation.y
